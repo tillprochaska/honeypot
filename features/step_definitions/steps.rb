@@ -1375,6 +1375,7 @@ end
 
 Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |sensor_id, table|
   sensor = create(:sensor, id: sensor_id, report: Report.current)
+  @sensor = sensor
   table.hashes.each do |row|
 		annotation = row['Annotation']
 		annotation = nil if annotation.blank?
@@ -1384,7 +1385,7 @@ Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |s
                             calibrated_value: row['Calibrated value'],
                             uncalibrated_value: row['Uncalibrated value'],
                             annotation: annotation,
-                            release: row['Release'])
+                            release: row['Release'] || 'final')
   end
 end
 
@@ -1498,4 +1499,18 @@ end
 
 When(/^I submit the form and delete the image$/) do
   click_on 'Update Text component'
+end
+
+When("in the row with sensor reading {int} I click on {string}") do |int, button|
+  within("#sensor-reading-#{int}") do
+    click button
+  end
+end
+
+When("I annotate {string} and click the submit button") do |string|
+  pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then("the annotation was successfully saved to the database and I can see it on the page") do
+  pending # Write code here that turns the phrase above into concrete actions
 end

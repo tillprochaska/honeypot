@@ -1,6 +1,13 @@
-%tr.sensor-reading-row{:id => "sensor-reading-" + reading.id.to_s}
-  %td= reading.id
-  %td= reading.created_at
-  %td= reading.calibrated_value
-  %td= reading.uncalibrated_value
-  %td= link_to 'Delete', report_sensor_reading_path(report_id: @report.id, sensor_id: @sensor.id, sensor_reading_id: reading.id), remote: true, method: :delete, :class => "btn btn-secondary"
+%tr.item-table__item.sensor-reading-row{:id => "sensor-reading-#{reading.id}"}
+  %td.align-middle= reading.created_at.strftime(Report::TIME_FORMAT)
+  %td.align-middle= reading.calibrated_value
+  %td.align-middle= reading.uncalibrated_value
+  %td.align-middle.annotation
+    = simple_form_for reading, url: report_sensor_reading_path(@report, @sensor, reading) do |f|
+      .input-group
+        = f.input_field :annotation, class: 'form-control', label: false
+        = f.hidden_field :sensor_id, :value => @sensor.id
+        .input-group-append
+          = f.submit 'Annotate', class: ['btn', 'btn-outline-secondary']
+  %td.item-table__actions.align-middle
+    = link_to '', report_sensor_reading_path(report_id: @report.id, sensor_id: @sensor.id, sensor_reading_id: reading.id), remote: true, method: :delete, class: ['item-table__action--destroy', 'fa', 'fa-trash'], title: 'Delete Sensor Reading', data: {toggle: 'tooltip'}

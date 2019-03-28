@@ -1,0 +1,5 @@
+
+%tr.item-table__item
+  %th{colspan: 5}= date.strftime(Report::DATE_FORMAT)
+- readings.each do |reading|
+  = render reading

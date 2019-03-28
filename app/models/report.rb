@@ -3,6 +3,7 @@
 class Report < ActiveRecord::Base
   DATE_FORMAT = '%-d.%-m.%Y'
   DATE_TIME_FORMAT = "#{DATE_FORMAT}, %H:%M Uhr"
+  TIME_FORMAT = "%H:%M:%S"
 
   has_many :triggers
   has_many :text_components

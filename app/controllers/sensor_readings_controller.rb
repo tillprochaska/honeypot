@@ -13,6 +13,24 @@ class SensorReadingsController < ApplicationController
     @sensor_readings
   end
 
+  def update
+    @sensor_reading = Sensor::Reading.find(sensor_reading_delete_params['sensor_reading_id'])
+    respond_to do |format|
+      if @sensor_reading.update(sensor_reading_params)
+        sensor = @sensor_reading.sensor
+        report = sensor.report
+        format.html { redirect_to report_sensor_path(report, sensor), notice: 'Sensor reading was successfully updated.' }
+        format.json { render :show, status: :accepted, location: report_sensor_reading_url(@report, @sensor_reading) }
+      else
+        format.html do
+          flash[:error]= 'Sensor reading could not updated!'
+          redirect_to report_sensor_path(report, sensor)
+        end
+        format.json { render json: @sensor_reading.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def create
     @sensor_reading = Sensor::Reading.new(sensor_reading_params)
     @sensor_reading.sensor = @sensor
@@ -23,7 +41,7 @@ class SensorReadingsController < ApplicationController
       else
         if @sensor_reading.save
           format.js { render 'sensor/readings/create' }
-          format.json { render :show, status: :created, location: report_sensor_reading_url(@report, @sensor_reading) }
+          format.json { render :show, status: :created, location: report_sensor_reading_url(@report, @sensor, @sensor_reading) }
         else
           format.json { render json: @sensor_reading.errors, status: :unprocessable_entity }
         end
