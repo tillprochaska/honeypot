@@ -1,4 +1,4 @@
-# story.board
+# Bienen live
 [![Build Status](https://travis-ci.org/tillprochaska/honeypot.svg?branch=master)](https://travis-ci.org/tillprochaska/honeypot)
 
 ## Installation
