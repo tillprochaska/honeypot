@@ -93,7 +93,7 @@ class SensorReadingsController < ApplicationController
 
   def sensor_reading_params
     format_particle_api_json
-    params.require(:sensor_reading).permit(:calibrated_value, :uncalibrated_value, :created_at, :id)
+    params.require(:sensor_reading).permit(:calibrated_value, :uncalibrated_value, :created_at, :id, :annotation)
   end
 
   def sensor_reading_delete_params
