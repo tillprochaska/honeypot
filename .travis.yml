@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.3.4
+  2.5.5
 services:
   - postgresql
 addons:
@@ -12,7 +12,8 @@ before_script:
   - cp config/database.travis.yml config/database.yml
   - bundle exec rake db:create db:migrate
 
-script: echo "TODO: run tests"
+script:
+  - echo "TODO: run tests"
 
 before_deploy:
   - echo "${DEPLOY_PRIVATE_KEY}" | base64 --decode >/tmp/deploy_rsa
