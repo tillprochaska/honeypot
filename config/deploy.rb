@@ -69,14 +69,5 @@ namespace :deploy do
     end
   end
 
-  desc 'Reassign Ownership of Database Tables'
-  task :reassign_db_ownership do
-    on roles(:web) do |host|
-      execute '~/reassign_db_ownership.sh', '-d story_board_production', '-o $POSTGRES_USERNAME'
-      info "Host #{host} reassign ownership of all tables to postgres user"
-    end
-  end
-
-  after :finished, :reassign_db_ownership
   after :finished, :restart_daemon
 end
