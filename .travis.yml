@@ -13,7 +13,8 @@ before_script:
   - bundle exec rake db:create db:migrate
 
 script:
-  - echo "TODO: run tests"
+  - bundle exec rake
+  - bin/rails db:seed
 
 before_deploy:
   - echo "${DEPLOY_PRIVATE_KEY}" | base64 --decode >/tmp/deploy_rsa
