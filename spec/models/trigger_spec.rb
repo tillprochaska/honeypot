@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe Trigger, type: :model do
@@ -31,11 +33,9 @@ describe Trigger, type: :model do
             expect(trigger.active?(diary_entry)).to be_truthy
           end
         end
-
       end
     end
   end
-
 
   context 'without a report' do
     specify { expect(build(:trigger, report: nil)).not_to be_valid }
@@ -44,7 +44,7 @@ describe Trigger, type: :model do
   describe '#priority' do
     it 'defaults to :medium' do
       trigger = build(:trigger)
-      expect(trigger.priority).to eq "medium"
+      expect(trigger.priority).to eq 'medium'
     end
 
     context 'missing' do
@@ -53,7 +53,6 @@ describe Trigger, type: :model do
       it { is_expected.not_to be_valid }
     end
   end
-
 
   describe '#events' do
     subject { trigger.events }
@@ -81,11 +80,10 @@ describe Trigger, type: :model do
       before { conditions }
 
       it 'get destroyed' do
-        expect{ trigger.destroy }.to change{ Condition.count }.from(4).to(1)
+        expect { trigger.destroy }.to change { Condition.count }.from(4).to(1)
       end
     end
   end
-
 
   describe '#active?' do
     let(:diary_entry) { DiaryEntry.new }
@@ -109,8 +107,8 @@ describe Trigger, type: :model do
       end
 
       context 'edge cases: a boundary of a condition is nil' do
-        [ {from: nil, to: 23,  value_in: 21, value_out: 24},
-          {from:23,   to: nil, value_in: 24, value_out: 21} ].each do |hash|
+        [{ from: nil, to: 23, value_in: 21, value_out: 24 },
+         { from: 23, to: nil, value_in: 24, value_out: 21 }].each do |hash|
           context ":from=#{hash[:from].inspect} but :to=#{hash[:to].inspect}" do
             let(:condition) do
               create(:condition,
@@ -127,13 +125,11 @@ describe Trigger, type: :model do
 
             describe 'opposite boundary still required' do
               before { create :sensor_reading, sensor: sensor, calibrated_value: hash[:value_out] }
-              it { is_expected.to be_falsy}
+              it { is_expected.to be_falsy }
             end
           end
         end
       end
-
-
 
       context 'with sensor readings of different releases' do
         before do
@@ -155,7 +151,7 @@ describe Trigger, type: :model do
     context 'given a diary entry' do
       let(:diary_entry) { create(:diary_entry) }
       context 'given events' do
-        before { trigger.events << event } 
+        before { trigger.events << event }
         context 'event active now' do
           let(:event) { create(:event) }
           before { event.start }

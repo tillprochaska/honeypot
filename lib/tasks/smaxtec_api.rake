@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 namespace :smaxtec_api do
-  desc "update sensors"
+  desc 'update sensors'
   task update_sensors: :environment do
     smaxtec_api_controller = SmaxtecApi.new
     smaxtec_api_controller.update_sensor_readings
@@ -7,7 +9,7 @@ namespace :smaxtec_api do
     smaxtec_api_controller.update_device_readings
   end
 
-  desc "add smaxtec sensortypes"
+  desc 'add smaxtec sensortypes'
   task add_smaxtec_sensortypes: :environment do
     SensorType.find_or_create_by(property: 'pH Value', unit: 'pH')
     SensorType.find_or_create_by(property: 'Movement', unit: '1-100')
@@ -32,9 +34,9 @@ namespace :smaxtec_api do
     SensorType.find_or_create_by(property: 'Event: High heat stress', unit: '0-1')
   end
 
-  desc "change smaxtec event sensortypes to bool"
+  desc 'change smaxtec event sensortypes to bool'
   task change_smaxtec_events_bool: :environment do
-    SensorType.where("property like ?", "Event:%").each do |sensor|
+    SensorType.where('property like ?', 'Event:%').each do |sensor|
       sensor.min = 0
       sensor.max = 1
       sensor.unit = ''

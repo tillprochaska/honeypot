@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SensorType, type: :model do
@@ -11,7 +13,7 @@ RSpec.describe SensorType, type: :model do
 
   describe '#fractionDigits' do
     context 'missing', issue: 666 do
-      let(:sensor_type) { build(:sensor_type, fractionDigits: nil)}
+      let(:sensor_type) { build(:sensor_type, fractionDigits: nil) }
       subject { sensor_type }
       it { is_expected.not_to be_valid }
     end

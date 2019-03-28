@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class EventsController < ApplicationController
-  before_action :set_event, only: [:show, :edit, :update, :destroy, :start, :stop]
+  before_action :set_event, only: %i[show edit update destroy start stop]
 
   # GET /events
   # GET /events.json
@@ -13,8 +15,7 @@ class EventsController < ApplicationController
   end
 
   # GET /events/1/edit
-  def edit
-  end
+  def edit; end
 
   def start
     start_or_stop(:start)
@@ -23,7 +24,6 @@ class EventsController < ApplicationController
   def stop
     start_or_stop(:stop)
   end
-
 
   # POST /events
   # POST /events.json
@@ -66,6 +66,7 @@ class EventsController < ApplicationController
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def set_event
     @event = Event.find(params[:id])
@@ -80,7 +81,7 @@ class EventsController < ApplicationController
     @action = action
     respond_to do |format|
       if @event.send(action)
-        format.js { render "events/activation/update" }
+        format.js { render 'events/activation/update' }
         format.json { render :show, status: :ok, location: @event }
       else
         format.json { render json: { error: 'Event is already in this state' }, status: :unprocessable_entity }

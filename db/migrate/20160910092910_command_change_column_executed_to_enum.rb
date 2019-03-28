@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommandChangeColumnExecutedToEnum < ActiveRecord::Migration
   def change
     remove_column :commands, :executed

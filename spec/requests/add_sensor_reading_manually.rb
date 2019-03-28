@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Add sensor reading manually', type: :request do
-
   describe 'POST /sensor_readings' do
     let(:sensor_reading_params) { { sensor_id: sensor.id, calibrated_value: 25.4, uncalibrated_value: 26.7, created_at: '2011-11-11 11:11:11' } }
     let(:sensor) { create(:sensor) }
@@ -28,7 +29,7 @@ RSpec.describe 'Add sensor reading manually', type: :request do
     end
 
     it 'returns generated sensor reading as json' do
-      post url, params: {sensor_reading: sensor_reading_params, format: :json}
+      post url, params: { sensor_reading: sensor_reading_params, format: :json }
       expect(JSON.parse(response.body).size).to eq 8
       expect(JSON.parse(response.body)['created_at']).to eq '2011-11-11T11:11:11.000Z'
     end

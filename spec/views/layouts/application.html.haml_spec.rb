@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe "layouts/application", type: :view do
+RSpec.describe 'layouts/application', type: :view do
   context 'when logged in' do
     helper do
       def user_signed_in?
@@ -13,60 +15,57 @@ RSpec.describe "layouts/application", type: :view do
     end
 
     before do
-      assign(:report , FactoryBot.create(:report))
+      assign(:report, FactoryBot.create(:report))
       assign(:subnav_items, [
-        [
-          {
-            name: "First Level Item 1",
-            url: "/ressource/1",
-            active: false,
-          },
-          {
-            name: "First Level Item 2",
-            url: "ressource/2",
-            active: true,
-          },
-          {
-            name: "First Level Item 3",
-            url: "ressource/3",
-            active: true,
-          }
-        ], [
-          {
-            name: "Second Level Item 1",
-            url: "/ressource/1/one",
-            active: true
-          },
-          {
-            name: "Second Level Item 2",
-            url: "/ressource/2/two",
-            active: false
-          }
-        ]
-      ])
+               [
+                 {
+                   name: 'First Level Item 1',
+                   url: '/ressource/1',
+                   active: false
+                 },
+                 {
+                   name: 'First Level Item 2',
+                   url: 'ressource/2',
+                   active: true
+                 },
+                 {
+                   name: 'First Level Item 3',
+                   url: 'ressource/3',
+                   active: true
+                 }
+               ], [
+                 {
+                   name: 'Second Level Item 1',
+                   url: '/ressource/1/one',
+                   active: true
+                 },
+                 {
+                   name: 'Second Level Item 2',
+                   url: '/ressource/2/two',
+                   active: false
+                 }
+               ]
+             ])
 
-      assign(:primary_action, {
-        name: 'Primary Call To Action',
-        url: '/ressource/new'
-      })
+      assign(:primary_action,
+             name: 'Primary Call To Action',
+             url: '/ressource/new')
 
       assign(:secondary_actions, [
-        {
-          name: 'Secondary Action 1',
-          url: '/do/this'
-        }, {
-          name: 'Secondary Action 2',
-          url: '/and/that'
-        }
-      ])
-
+               {
+                 name: 'Secondary Action 1',
+                 url: '/do/this'
+               }, {
+                 name: 'Secondary Action 2',
+                 url: '/and/that'
+               }
+             ])
     end
-    
+
     let(:parsed) do
       render
       Capybara.string(rendered)
     end
-
 
     context 'renders a breadcrumb menu' do
       it 'has multiple levels' do
@@ -96,6 +95,5 @@ RSpec.describe "layouts/application", type: :view do
         expect(parsed).to have_css('.subnav__actions select option', count: 3, visible: false)
       end
     end
-
   end
 end

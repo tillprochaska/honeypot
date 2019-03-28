@@ -1,14 +1,15 @@
-class TextComponentDecorator
+# frozen_string_literal: true
 
+class TextComponentDecorator
   def initialize(text_component, diary_entry)
     @diary_entry = diary_entry
     @renderer = Text::Renderer.new(text_component: text_component, diary_entry: @diary_entry)
     @text_component = text_component
   end
 
-  [:heading, :introduction, :main_part, :closing].each do |part|
+  %i[heading introduction main_part closing].each do |part|
     define_method(part) do
-      @renderer.render(part) 
+      @renderer.render(part)
     end
   end
 
@@ -27,7 +28,7 @@ class TextComponentDecorator
   end
 
   def table_channel_icon
-    if(channel_icons.length > 1)
+    if channel_icons.length > 1
       'fa-ellipsis-h'
     else
       channel_icons.first
@@ -52,7 +53,7 @@ class TextComponentDecorator
   end
 
   def channel_list
-    @text_component.channels.map{|c| c.name.humanize}.join(', ')
+    @text_component.channels.map { |c| c.name.humanize }.join(', ')
   end
 
   def channel_icons

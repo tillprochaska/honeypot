@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   devise_for :users
   resources :chains
@@ -8,7 +10,7 @@ Rails.application.routes.draw do
     end
   end
   resources :events, except: :show
-  resources :events, only: :show, :constraints => {:format => :json}
+  resources :events, only: :show, constraints: { format: :json }
   post 'events/:id/start', to: 'events#start', as: 'start_event'
   post 'events/:id/stop', to: 'events#stop', as: 'stop_event'
 
@@ -25,11 +27,11 @@ Rails.application.routes.draw do
   # route for chatfuel questions and answers
   get 'reports/:report_id/chatfuel/text_components/:text_component_id/answer_to_question/:index', to: 'chatfuel#answer_to_question', as: 'answer_to_question'
 
-  resources :channels, only: [:edit, :show, :update]
+  resources :channels, only: %i[edit show update]
 
   resources :reports, param: :report_id # shallow nesting to avoid id param like :report_report_id
   resources :reports, only: [] do # only: [] to remove duplicate top level routes
-    resources :diary_entries, only: [:index, :show]
+    resources :diary_entries, only: %i[index show]
     resources :text_components do
       get 'duplicate', on: :member
     end
@@ -39,7 +41,7 @@ Rails.application.routes.draw do
         put :start_calibration
         put :stop_calibration
 
-        resources :sensor_readings, only:[:show, :create, :index, :destroy], default: { format: :json }
+        resources :sensor_readings, only: %i[show create index destroy], default: { format: :json }
         post 'sensor_readings/debug', to: 'sensor_readings#debug', default: { format: :json }
       end
     end

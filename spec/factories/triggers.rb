@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :trigger do
     name "It's a name"
     association :report
-
 
     trait :active do
       # is active by default

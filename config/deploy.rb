@@ -1,5 +1,6 @@
-require 'capistrano-db-tasks'
+# frozen_string_literal: true
 
+require 'capistrano-db-tasks'
 
 # config valid only for current version of Capistrano
 lock '3.11.0'
@@ -63,7 +64,7 @@ namespace :deploy do
 
   desc 'Restart Daemon'
   task :restart_daemon do
-    on roles(:web)  do |host|
+    on roles(:web) do |host|
       execute :supervisorctl, 'restart storyboard'
       info "Host #{host} restarting storyboard daemon"
     end

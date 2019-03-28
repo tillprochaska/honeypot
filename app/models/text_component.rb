@@ -1,28 +1,30 @@
+# frozen_string_literal: true
+
 class TextComponent < ActiveRecord::Base
   TIME_FRAMES = {
-      'always' => [nil, nil].to_json,
-      '(06:00 - 09:00) in the morning' => [6, 9].to_json,
-      '(09:00 - 13:00) before noon' => [9, 13].to_json,
-      '(13:00 - 18:00) afternoons' => [13, 18].to_json,
-      '(18:00 - 00:00) evenings' => [18, 0].to_json,
-      '(00:00 - 06:00) nights' => [0, 6].to_json,
-  }
+    'always' => [nil, nil].to_json,
+    '(06:00 - 09:00) in the morning' => [6, 9].to_json,
+    '(09:00 - 13:00) before noon' => [9, 13].to_json,
+    '(13:00 - 18:00) afternoons' => [13, 18].to_json,
+    '(18:00 - 00:00) evenings' => [18, 0].to_json,
+    '(00:00 - 06:00) nights' => [0, 6].to_json
+  }.freeze
 
   attr_accessor :delete_image
-  before_validation { self.image.clear if delete_image == '1' }
+  before_validation { image.clear if delete_image == '1' }
 
   # This method associates the attribute ":image" with a file attachment
   has_attached_file :image, styles: {
     small: '620>',
-    big: '1000>',
+    big: '1000>'
   }
 
   def image_url_big
-    return image.url(:big)
+    image.url(:big)
   end
 
   def image_url_small
-    return image.url(:small)
+    image.url(:small)
   end
 
   validates :heading, :report, presence: true
@@ -44,14 +46,13 @@ class TextComponent < ActiveRecord::Base
   validates :channels, presence: true
   # Validate the attached image is image/jpg, image/png, etc
   validates_attachment :image,
-    content_type: { content_type: /\Aimage\/.*\z/ },
-    size: { in: 0..20.megabytes }
+                       content_type: { content_type: %r{\Aimage/.*\z} },
+                       size: { in: 0..20.megabytes }
 
   delegate :name, to: :topic, prefix: true, allow_nil: true
   delegate :name, to: :assignee, prefix: true, allow_nil: true
 
-  enum publication_status: { :draft => 0, :fact_checked => 1, :published => 2 }
-
+  enum publication_status: { draft: 0, fact_checked: 1, published: 2 }
 
   def timeframe=(frame)
     arr = JSON.parse(frame)
@@ -59,37 +60,33 @@ class TextComponent < ActiveRecord::Base
   end
 
   def timeframe
-    [self.from_hour, self.to_hour].to_json
+    [from_hour, to_hour].to_json
   end
 
   def displayed_timeframe
-    label = TextComponent::TIME_FRAMES.invert[self.timeframe]
-    if label
-      label.split(') ').last
-    else
-      nil
-    end
+    label = TextComponent::TIME_FRAMES.invert[timeframe]
+    label&.split(') ')&.last
   end
 
   def active?(diary_entry)
-    on_time?(diary_entry) && triggers.all? {|t| t.active?(diary_entry) }
+    on_time?(diary_entry) && triggers.all? { |t| t.active?(diary_entry) }
   end
 
   def on_time?(diary_entry)
     result = true
     if from_day
-        result &= ((report.start_date + from_day.days) <= diary_entry.moment.to_date)
+      result &= ((report.start_date + from_day.days) <= diary_entry.moment.to_date)
     end
     if to_day
-        result &= (diary_entry.moment.to_date <= (report.start_date + to_day.days))
+      result &= (diary_entry.moment.to_date <= (report.start_date + to_day.days))
     end
 
     if from_hour && to_hour
       if from_hour <= to_hour
-        result &= (from_hour <= diary_entry.moment.hour ) && (diary_entry.moment.hour < to_hour)
+        result &= (from_hour <= diary_entry.moment.hour) && (diary_entry.moment.hour < to_hour)
       else
         # e.g. 21:00 -> 6:00
-        result &= (diary_entry.moment.hour < to_hour ) || (from_hour <= diary_entry.moment.hour)
+        result &= (diary_entry.moment.hour < to_hour) || (from_hour <= diary_entry.moment.hour)
       end
     end
     result
@@ -100,21 +97,18 @@ class TextComponent < ActiveRecord::Base
   end
 
   def priority
-    most_important_trigger = triggers.sort_by {|t| Trigger.priorities[t.priority] }.reverse.first
-    most_important_trigger && most_important_trigger.priority
+    most_important_trigger = triggers.sort_by { |t| Trigger.priorities[t.priority] }.reverse.first
+    most_important_trigger&.priority
   end
 
   def image_url
-    self.image&.url
+    image&.url
   end
 
   private
+
   def both_hours_are_given
-    if from_hour && to_hour.blank?
-      errors.add(:to_hour, "is missing")
-    end
-    if to_hour && from_hour.blank?
-      errors.add(:from_hour, "is missing")
-    end
+    errors.add(:to_hour, 'is missing') if from_hour && to_hour.blank?
+    errors.add(:from_hour, 'is missing') if to_hour && from_hour.blank?
   end
 end

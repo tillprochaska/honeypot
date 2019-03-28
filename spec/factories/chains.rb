@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :chain do
     actuator nil
     function 1
-    hashtag "MyString"
+    hashtag 'MyString'
   end
 end

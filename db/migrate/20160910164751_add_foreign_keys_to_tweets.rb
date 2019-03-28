@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddForeignKeysToTweets < ActiveRecord::Migration
   def change
     add_reference :tweets, :chain, index: true, foreign_key: true

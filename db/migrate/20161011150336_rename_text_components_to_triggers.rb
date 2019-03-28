@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameTextComponentsToTriggers < ActiveRecord::Migration
   def change
     rename_table :text_components, :triggers

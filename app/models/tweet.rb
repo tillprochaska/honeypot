@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Tweet < ActiveRecord::Base
   belongs_to :chain
   belongs_to :command
@@ -9,14 +11,11 @@ class Tweet < ActiveRecord::Base
   before_create :assign_chain
   after_create :create_command
 
-
   private
 
   def assign_chain
     unless chain
-      if main_hashtag
-        self.chain = Chain.find_by(hashtag: main_hashtag)
-      end
+      self.chain = Chain.find_by(hashtag: main_hashtag) if main_hashtag
     end
   end
 
@@ -28,8 +27,7 @@ class Tweet < ActiveRecord::Base
         status: :pending,
         tweet: self
       )
-      self.command.save
+      command.save
     end
   end
-
 end

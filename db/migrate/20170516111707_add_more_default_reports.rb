@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddMoreDefaultReports < ActiveRecord::Migration[5.0]
   def change
     Report.create!(name: 'Industrie', start_date: Time.now)

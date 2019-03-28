@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateTextComponentsChannels < ActiveRecord::Migration[5.0]
   def change
     create_table :channels_text_components do |t|

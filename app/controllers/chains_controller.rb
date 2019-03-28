@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class ChainsController < ApplicationController
-  before_action :set_chain, only: [:show, :edit, :update, :destroy]
+  before_action :set_chain, only: %i[show edit update destroy]
 
   # GET /chains
   # GET /chains.json
@@ -9,8 +11,7 @@ class ChainsController < ApplicationController
 
   # GET /chains/1
   # GET /chains/1.json
-  def show
-  end
+  def show; end
 
   # GET /chains/new
   def new
@@ -18,8 +19,7 @@ class ChainsController < ApplicationController
   end
 
   # GET /chains/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /chains
   # POST /chains.json
@@ -62,13 +62,14 @@ class ChainsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_chain
-      @chain = Chain.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def chain_params
-      params.require(:chain).permit(:actuator_id, :function, :hashtag)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_chain
+    @chain = Chain.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def chain_params
+    params.require(:chain).permit(:actuator_id, :function, :hashtag)
+  end
 end

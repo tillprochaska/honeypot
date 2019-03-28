@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Text::Sorter do
@@ -14,7 +16,7 @@ RSpec.describe Text::Sorter do
           create(:text_component, heading: 'Text component Medium', triggers: [create(:trigger, priority: :medium)]),
           create(:text_component, heading: 'Text component Low', triggers: [create(:trigger, priority: :low)]),
           create(:text_component, heading: 'Text component High', triggers: [create(:trigger, priority: :high)]),
-          create(:text_component, heading: 'Text component High', triggers: [create(:trigger, priority: :always_on_top)]),
+          create(:text_component, heading: 'Text component High', triggers: [create(:trigger, priority: :always_on_top)])
 
         ]
       end
@@ -30,7 +32,7 @@ RSpec.describe Text::Sorter do
       let(:text_components) do
         [
           create(:text_component, heading: 'Text component 2', triggers: []),
-          create(:text_component, heading: 'Text component 1', triggers: [create(:trigger, priority: :medium)]),
+          create(:text_component, heading: 'Text component 1', triggers: [create(:trigger, priority: :medium)])
         ]
       end
 
@@ -51,12 +53,11 @@ RSpec.describe Text::Sorter do
           create(:text_component, heading: 'Text component 07', triggers: [create(:trigger, priority: :medium)]),
           create(:text_component, heading: 'Text component 08', triggers: [create(:trigger, priority: :medium)]),
           create(:text_component, heading: 'Text component 09', triggers: [create(:trigger, priority: :medium)]),
-          create(:text_component, heading: 'Text component 10', triggers: [create(:trigger, priority: :medium)]),
+          create(:text_component, heading: 'Text component 10', triggers: [create(:trigger, priority: :medium)])
         ]
       end
 
       it 'returns different text components randomly' do
-
         different_headings = 10.times.collect do
           described_class.sort(text_components).first.heading
         end.uniq

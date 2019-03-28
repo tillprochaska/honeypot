@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateMomentOfExistingDiaryEntriesAgain < ActiveRecord::Migration[5.0]
   def change
     DiaryEntry.find_each do |entry|

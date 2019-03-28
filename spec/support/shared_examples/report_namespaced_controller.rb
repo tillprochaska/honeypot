@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_examples 'a report/ namespaced controller' do |model, additional_attributes|
   context 'signed in' do
     let(:user) { create(:user) }
@@ -16,17 +18,17 @@ RSpec.shared_examples 'a report/ namespaced controller' do |model, additional_at
       describe 'POST' do
         subject { post "/reports/#{old_report.id}/#{model_symbol}s", params: params }
         let(:valid_attributes) { attributes_for(model_symbol).merge(additional_attributes.to_h) }
-        let(:params) { { model_symbol => valid_attributes.merge({ report_id: 69 }) } }
+        let(:params) { { model_symbol => valid_attributes.merge(report_id: 69) } }
         it 'redirects to new report' do
           is_expected.to redirect_to(url_for(controller: controller, action: :show, report_id: 69, id: model.last.id))
         end
       end
 
       describe 'PATCH' do
-        let(:record) { create(model_symbol, report:old_report) }
+        let(:record) { create(model_symbol, report: old_report) }
         before { record }
         subject { patch "/reports/#{old_report.id}/#{model_symbol}s/#{record.id}", params: params }
-        let(:params) { { model_symbol => record.attributes.merge({ report_id: 69 }) } }
+        let(:params) { { model_symbol => record.attributes.merge(report_id: 69) } }
         it 'redirects to new report' do
           is_expected.to redirect_to(url_for(controller: controller, action: :show, report_id: 69, id: record.id))
         end

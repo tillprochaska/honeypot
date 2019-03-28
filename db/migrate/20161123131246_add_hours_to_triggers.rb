@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddHoursToTriggers < ActiveRecord::Migration[5.0]
   def change
     add_column :triggers, :from_hour, :integer

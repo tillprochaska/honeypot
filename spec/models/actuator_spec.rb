@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'support/shared_examples/database_unique_attribute'
 
 RSpec.describe Actuator, type: :model do
-
   describe '#name' do
     it_behaves_like 'database unique attribute', :actuator, name: 'Whatever'
   end

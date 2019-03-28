@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MoveDataFromTriggersToTextComponents < ActiveRecord::Migration
   def up
     Trigger.find_each do |t|
@@ -15,6 +17,5 @@ class MoveDataFromTriggersToTextComponents < ActiveRecord::Migration
     remove_column :triggers, :introduction
     remove_column :triggers, :main_part
     remove_column :triggers, :closing
-
   end
 end

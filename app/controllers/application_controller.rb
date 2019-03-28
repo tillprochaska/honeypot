@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -16,16 +18,16 @@ class ApplicationController < ActionController::Base
   end
 
   def set_report
-    if params[:report_id]
-      @report = Report.find(params[:report_id])
-    else
-      @report = Report.current
-    end
+    @report = if params[:report_id]
+                Report.find(params[:report_id])
+              else
+                Report.current
+              end
   end
 
   def set_subnav
     if @report
-      if ['reports', 'text_components', 'triggers', 'sensors', 'events'].include?(params[:controller])
+      if %w[reports text_components triggers sensors events].include?(params[:controller])
         set_subnav_items
         set_subnav_actions
       end
@@ -34,10 +36,9 @@ class ApplicationController < ActionController::Base
 
   def set_subnav_items
     reports = Report.all.map do |report|
-
       get_current_action = lambda do |controller|
         action = nil
-        if params[:controller] == controller && ['show', 'edit', 'new', 'duplicate'].include?(params[:action])
+        if params[:controller] == controller && %w[show edit new duplicate].include?(params[:action])
           action = [{
             name: params[:action].humanize.titlecase,
             active: true
@@ -48,7 +49,7 @@ class ApplicationController < ActionController::Base
 
       children = []
 
-      children += ['present', 'preview'].map do |child|
+      children += %w[present preview].map do |child|
         names = {
           present: 'Live Report',
           preview: 'Preview Report'
@@ -61,24 +62,24 @@ class ApplicationController < ActionController::Base
         }
       end
 
-      children += ['text_components', 'triggers', 'sensors'].map do |child|
+      children += %w[text_components triggers sensors].map do |child|
         {
           name: child.humanize.titlecase,
           url: url_for(controller: child, report_id: report.id),
-          active: params[:controller] == child,
+          active: params[:controller] == child
         }
       end
 
       children << {
         name: 'Events',
         url: events_path(report_id: report.id),
-        active: params[:controller] == 'events',
+        active: params[:controller] == 'events'
       }
 
       children << {
         name: 'Report Settings',
         url: report_path(report),
-        active: params[:controller] == 'reports' && ['show', 'edit'].include?(params[:action])
+        active: params[:controller] == 'reports' && %w[show edit].include?(params[:action])
       }
 
       action = 'index'
@@ -97,7 +98,6 @@ class ApplicationController < ActionController::Base
         active: @report.id == report.id,
         children: children
       }
-
     end
 
     item = {
@@ -111,13 +111,12 @@ class ApplicationController < ActionController::Base
       @subnav_items << item[:children]
       item = item[:children].find { |child| child[:active] }
     end
-
   end
 
   def set_subnav_actions
     actions = {}
 
-    ['text_components', 'triggers', 'sensors'].each do |action|
+    %w[text_components triggers sensors].each do |action|
       actions["create_#{action.singularize}"] = {
         controller: action,
         name: "New #{action.to_s.singularize.humanize.titlecase}",
@@ -140,7 +139,7 @@ class ApplicationController < ActionController::Base
       }
     end
 
-    if params[:controller] == 'text_components' && ['show', 'edit'].include?(params[:action])
+    if params[:controller] == 'text_components' && %w[show edit].include?(params[:action])
       actions['duplicate_text_component'] = {
         controller: 'text_components',
         action: 'duplicate',
@@ -157,18 +156,15 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    unless primary_action
-      primary_action = 'create_text_component'
-    end
+    primary_action ||= 'create_text_component'
 
-    secondary_actions = actions.select do |key, action|
-      key != primary_action
+    secondary_actions = actions.reject do |key, _action|
+      key == primary_action
     end
 
     @primary_action = actions[primary_action]
     @secondary_actions = secondary_actions.values.sort_by do |action|
       params[:controller] == action[:controller] ? 0 : 1
     end
-
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChatfuelController < ApplicationController
   before_action :set_live_diary_entry
   before_action :authenticate_user!, only: [] # never
@@ -5,7 +7,7 @@ class ChatfuelController < ApplicationController
   def show
     @topic = Topic.find_by(name: params[:topic])
     if @topic
-      relevant_text_components = @report.active_chatbot_components(@live_entry).select {|c| c.topic_id == @topic.id}
+      relevant_text_components = @report.active_chatbot_components(@live_entry).select { |c| c.topic_id == @topic.id }
       @text_component = Text::Sorter.sort(relevant_text_components).first
 
       if @text_component
@@ -41,7 +43,7 @@ class ChatfuelController < ApplicationController
       text = Text::Renderer.new(text_component: @text_component, diary_entry: @live_entry).render(:main_part)
     end
 
-    content = text.first(640);
+    content = text.first(640)
 
     if @next_question_answer
       {
@@ -49,17 +51,17 @@ class ChatfuelController < ApplicationController
           {
             attachment: {
               payload: {
-                template_type: "button",
-                text: "#{content}",
+                template_type: 'button',
+                text: content.to_s,
                 buttons: [
                   {
                     url: answer_to_question_url(text_component_id: @text_component, index: @text_component.question_answers.index(@next_question_answer) + 1),
-                    type: "json_plugin_url",
+                    type: 'json_plugin_url',
                     title: @next_question_answer.question
                   }
-              ]
+                ]
               },
-              type: "template"
+              type: 'template'
             }
           }
         ]
@@ -69,7 +71,7 @@ class ChatfuelController < ApplicationController
         messages: [
           { text: content.first(640) }
         ],
-        redirect_to_blocks: ["continue_" + @topic.name + "_" + @report.id.to_s]
+        redirect_to_blocks: ['continue_' + @topic.name + '_' + @report.id.to_s]
       }
     else
       {

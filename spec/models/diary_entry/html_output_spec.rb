@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe DiaryEntry, type: :model do
@@ -29,10 +31,10 @@ RSpec.describe DiaryEntry, type: :model do
               create(:text_component, report: report, heading: 'Text component 2', triggers: [create(:trigger, priority: :high)]),
               create(:text_component, report: report, heading: 'Text component 3', triggers: [create(:trigger, priority: :medium)]),
               create(:text_component, report: report, heading: 'Text component 4', triggers: [create(:trigger, priority: :low)]),
-              create(:text_component, report: report, heading: 'Text component 5', triggers: [create(:trigger, priority: :totally_boring)]),
+              create(:text_component, report: report, heading: 'Text component 5', triggers: [create(:trigger, priority: :totally_boring)])
             ]
           end
-          it { is_expected.to eq 'Text component 1'}
+          it { is_expected.to eq 'Text component 1' }
         end
 
         context 'every text component has a trigger with the same priority' do
@@ -40,10 +42,10 @@ RSpec.describe DiaryEntry, type: :model do
             [
               create(:text_component, report: report, heading: 'Text component 1', triggers: [create(:trigger, priority: :medium)]),
               create(:text_component, report: report, heading: 'Text component 2', triggers: [create(:trigger, priority: :medium)]),
-              create(:text_component, report: report, heading: 'Text component 3', triggers: [create(:trigger, priority: :medium)]),
+              create(:text_component, report: report, heading: 'Text component 3', triggers: [create(:trigger, priority: :medium)])
             ]
           end
-          it { is_expected.to match(/Text component/)} # any of those headings
+          it { is_expected.to match(/Text component/) } # any of those headings
         end
       end
 
@@ -51,10 +53,10 @@ RSpec.describe DiaryEntry, type: :model do
         let!(:text_components) do
           [
             create(:text_component, report: report, heading: 'Text component 1', triggers: [create(:trigger, priority: :medium)]),
-            create(:text_component, report: report, heading: 'Text component 2', triggers: []),
+            create(:text_component, report: report, heading: 'Text component 2', triggers: [])
           ]
         end
-        it { is_expected.to eq 'Text component 1'} # priority nil is lowest
+        it { is_expected.to eq 'Text component 1' } # priority nil is lowest
       end
     end
 
@@ -92,10 +94,10 @@ RSpec.describe DiaryEntry, type: :model do
         it { is_expected.to include('main_part') }
 
         context 'and a loooooong text' do
-          let(:main_part) { 'a' * 50000 }
+          let(:main_part) { 'a' * 50_000 }
           it 'contains all the text' do
             parsed = Capybara.string(subject)
-            expect(parsed.text.strip.length).to eq 50000
+            expect(parsed.text.strip.length).to eq 50_000
           end
         end
       end
@@ -112,13 +114,14 @@ RSpec.describe DiaryEntry, type: :model do
 
         describe 'subheadings' do
           let(:text) { Capybara.string(subject).text }
-          let(:components) { [
-            build(:text_component, heading: '1st heading', main_part: ('long first part ' * 50)),
-            build(:text_component, heading: '2nd heading will be used as break', main_part: ('short second part ')),
-            build(:text_component, heading: '3rd heading', main_part: ('long third part ' * 50))
-          ] }
-          before { allow(diary_entry).to receive(:sorted_components) {components} } # enforce this order
-
+          let(:components) do
+            [
+              build(:text_component, heading: '1st heading', main_part: ('long first part ' * 50)),
+              build(:text_component, heading: '2nd heading will be used as break', main_part: 'short second part '),
+              build(:text_component, heading: '3rd heading', main_part: ('long third part ' * 50))
+            ]
+          end
+          before { allow(diary_entry).to receive(:sorted_components) { components } } # enforce this order
 
           it 'heading of next component becomes subheading' do
             expect(text.split('heading').count).to eq 2
@@ -176,29 +179,31 @@ RSpec.describe DiaryEntry, type: :model do
       it { is_expected.to eq '' }
 
       context 'given one text_component' do
-        let(:report)          { create(:report) }
-        let(:components)  { create_list(:text_component, 1, report: report, main_part: main_part) }
-        let(:main_part)       { "some content" }
+        let(:report) { create(:report) }
+        let(:components) { create_list(:text_component, 1, report: report, main_part: main_part) }
+        let(:main_part) { 'some content' }
 
         it { is_expected.to include('some content') }
 
         describe 'report markup' do
           describe 'report name' do
             let(:report)    { create(:report, name: 'Foobar') }
-            let(:main_part) { "Say something about { report}." }
+            let(:main_part) { 'Say something about { report}.' }
             it { is_expected.to include('Say something about Foobar.') }
           end
 
           describe 'report variables' do
             let(:report)    { create(:report, variables: variables) }
-            let(:variables) { [ create(:variable, key: 'cool_thing', value: 'sth. cool') ] }
-            let(:main_part) { "Say something about { cool_thing }." }
+            let(:variables) { [create(:variable, key: 'cool_thing', value: 'sth. cool')] }
+            let(:main_part) { 'Say something about { cool_thing }.' }
             it { is_expected.to include('Say something about sth. cool.') }
 
             context 'many variables' do
-              let(:main_part) { "Write about { v1 } and { v2 }." }
-              let(:variables) { [ create(:variable, key: 'v1', value: 'this'),
-                                  create(:variable, key: 'v2', value: 'that'),] }
+              let(:main_part) { 'Write about { v1 } and { v2 }.' }
+              let(:variables) do
+                [create(:variable, key: 'v1', value: 'this'),
+                 create(:variable, key: 'v2', value: 'that')]
+              end
               it { is_expected.to include('Write about this and that.') }
             end
           end
@@ -209,7 +214,7 @@ RSpec.describe DiaryEntry, type: :model do
           let(:trigger) { create(:trigger, text_components: [text_component]) }
 
           context 'given an event' do
-            let(:event)      { create(:event, id: 42, name: "DEATH", triggers: [trigger]) }
+            let(:event) { create(:event, id: 42, name: 'DEATH', triggers: [trigger]) }
             before { event }
             it('event must happen first') { is_expected.to eq('') }
             context 'is happening now' do
@@ -217,7 +222,7 @@ RSpec.describe DiaryEntry, type: :model do
               it { is_expected.to include('some content') }
 
               describe 'markup for the day of the event' do
-                let(:main_part)      { 'Day of your death: { date(42) }' }
+                let(:main_part) { 'Day of your death: { date(42) }' }
                 it('renders the day of the event') { is_expected.to include('Day of your death: 2.2.2017') }
               end
             end
@@ -228,11 +233,10 @@ RSpec.describe DiaryEntry, type: :model do
             let(:sensor)         { create(:sensor, name: 'SensorXY', sensor_type: sensor_type) }
             let(:sensor_type)    { create(:sensor_type, property: 'Temperature', unit: '°C') }
             before { condition }
-            it('condition must hold') { is_expected.to eq ('') }
-
+            it('condition must hold') { is_expected.to eq '' }
 
             context 'given sensor data' do
-              let(:reading)        { create(:sensor_reading, sensor: sensor, calibrated_value: 5) }
+              let(:reading) { create(:sensor_reading, sensor: sensor, calibrated_value: 5) }
               before { reading }
 
               it { is_expected.to include('some content') }
@@ -258,9 +262,8 @@ RSpec.describe DiaryEntry, type: :model do
 
               context 'markup references an unknown sensor' do
                 let(:components)  { create_list(:text_component, 1, :active, report: report, main_part: main_part) }
-                let(:main_part)   { "Sensor value: { valueOf(4711) }" }
+                let(:main_part)   { 'Sensor value: { valueOf(4711) }' }
                 describe 'markup' do
-
                   it('will be ignored') do
                     text_component = components.first
                     expect(text_component.sensors.pluck(:id)).not_to include(4711)

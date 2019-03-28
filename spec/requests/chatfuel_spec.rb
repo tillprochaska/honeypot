@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe "Chatfuel", type: :request do
+RSpec.describe 'Chatfuel', type: :request do
   let(:report) { Report.current }
   describe 'GET' do
     subject do
@@ -8,8 +10,8 @@ RSpec.describe "Chatfuel", type: :request do
       response
     end
 
-    describe "/chatfuel/:topic" do
-      let(:topic_name) { "milk_quality" }
+    describe '/chatfuel/:topic' do
+      let(:topic_name) { 'milk_quality' }
       let(:url) { "/reports/#{report.id}/chatfuel/#{topic_name}" }
       let(:chatbot_channel)   { Channel.chatbot }
       let(:report)            { Report.current }
@@ -19,12 +21,12 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       describe 'text component doesn\'t exist' do
-        before { create(:topic, id: 1, name: "milk_quality") }
+        before { create(:topic, id: 1, name: 'milk_quality') }
         it { is_expected.to have_http_status(404) }
       end
 
       describe 'text component with wrong topic' do
-        let(:topic) { create(:topic, id: 2, name: "milk_quantity") }
+        let(:topic) { create(:topic, id: 2, name: 'milk_quantity') }
 
         before do
           create(
@@ -32,7 +34,7 @@ RSpec.describe "Chatfuel", type: :request do
             report: report,
             topic: topic,
             channels: [chatbot_channel],
-            main_part: "The main part",
+            main_part: 'The main part',
             id: 1
           )
         end
@@ -41,7 +43,7 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       describe 'text component with wrong channel' do
-        let(:topic) { create(:topic, id: 1, name: "milk_quality") }
+        let(:topic) { create(:topic, id: 1, name: 'milk_quality') }
 
         before do
           create(
@@ -49,7 +51,7 @@ RSpec.describe "Chatfuel", type: :request do
             report: report,
             topic: topic,
             channels: [Channel.sensorstory],
-            main_part: "The main part",
+            main_part: 'The main part',
             id: 1
           )
         end
@@ -58,7 +60,7 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       describe 'existing topic' do
-        let(:topic) { create(:topic, id: 1, name: "milk_quality") }
+        let(:topic) { create(:topic, id: 1, name: 'milk_quality') }
 
         before do
           create(
@@ -66,7 +68,7 @@ RSpec.describe "Chatfuel", type: :request do
             report: report,
             topic: topic,
             channels: [chatbot_channel],
-            main_part: "The main part",
+            main_part: 'The main part',
             id: 1
           )
         end
@@ -80,8 +82,8 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       describe 'existing topic adorable kitten' do
-        let(:topic) { create(:topic, id: 1, name: "adorable_kitten") }
-        let(:topic_name) { "adorable_kitten" }
+        let(:topic) { create(:topic, id: 1, name: 'adorable_kitten') }
+        let(:topic_name) { 'adorable_kitten' }
 
         before do
           create(
@@ -89,7 +91,7 @@ RSpec.describe "Chatfuel", type: :request do
             report: report,
             topic: topic,
             channels: [chatbot_channel],
-            main_part: "Purr Purr",
+            main_part: 'Purr Purr',
             id: 1
           )
         end
@@ -103,7 +105,7 @@ RSpec.describe "Chatfuel", type: :request do
       end
     end
 
-    describe "/chatfuel/text_components/:text_component_id/answer_to_question/:index" do
+    describe '/chatfuel/text_components/:text_component_id/answer_to_question/:index' do
       let(:text_component_id) { 1 }
       let(:index) { 1 }
       let(:url) { "/reports/#{report.id}/chatfuel/text_components/#{text_component_id}/answer_to_question/#{index}" }
@@ -123,7 +125,6 @@ RSpec.describe "Chatfuel", type: :request do
         end
       end
 
-
       context 'no text component' do
         it 'raise ActiveRecord::RecordNotFound' do
           expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
@@ -142,7 +143,7 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       context 'text component with just one question_answer' do
-        let(:topic) { create(:topic, id: 1, name: "milk_quality") }
+        let(:topic) { create(:topic, id: 1, name: 'milk_quality') }
         let(:question_answer) { create(:question_answer, question: 'What up?', answer: 'The sun') }
         before { create(:text_component, id: 1, question_answers: [question_answer], topic: topic) }
 
@@ -155,7 +156,7 @@ RSpec.describe "Chatfuel", type: :request do
       end
 
       context 'text component with two question_answers' do
-        let(:topic) { create(:topic, id: 1, name: "milk_quality") }
+        let(:topic) { create(:topic, id: 1, name: 'milk_quality') }
         let(:question_answers) { create_list(:question_answer, 2, question: 'What up?', answer: 'The sun') }
         before { create(:text_component, id: 1, question_answers: question_answers, topic: topic) }
 

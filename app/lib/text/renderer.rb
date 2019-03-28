@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Text
   class Renderer
     def initialize(text_component:, diary_entry:)
@@ -12,25 +14,25 @@ module Text
     end
 
     def render_string(template)
-      unless template =~ /({.*})/
-        return template
-      else
+      if /({.*})/.match?(template)
         rendered = template
         rendered = render_report(rendered)
 
         sensor_markup = rendered.scan(/{\s*value\(\s*(\d+)\s*\)\s*}/).flatten
-        Sensor.where(:id => sensor_markup).each do |sensor|
+        Sensor.where(id: sensor_markup).each do |sensor|
           s = SensorDecorator.new(sensor, @diary_entry)
           rendered.gsub!(/({\s*value\(\s*(#{ s.id })\s*\)\s*})/, s.last_value)
         end
 
         event_markup = rendered.scan(/{\s*date\(\s*(\d+)\s*\)\s*}/).flatten
-        Event.where(:id => event_markup).each do |event|
+        Event.where(id: event_markup).each do |event|
           e = EventDecorator.new(event)
           rendered.gsub!(/({\s*date\(\s*(#{ e.id })\s*\)\s*})/, e.last_started_date_before(@diary_entry.moment))
         end
 
         rendered
+      else
+        template
       end
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSensorTypes < ActiveRecord::Migration
   def change
     create_table :sensor_types do |t|

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class TextComponentsController < ApplicationController
-  before_action :set_text_component, only: [:show, :edit, :update, :destroy]
+  before_action :set_text_component, only: %i[show edit update destroy]
   before_action :set_form_data
 
   # GET /text_components
@@ -9,10 +11,9 @@ class TextComponentsController < ApplicationController
     @text_component = @new_text_component
   end
 
-  # GET /text_components/1   
+  # GET /text_components/1
   # GET /text_components/1.json
-  def show
-  end
+  def show; end
 
   def new
     @text_component = TextComponent.new
@@ -37,8 +38,7 @@ class TextComponentsController < ApplicationController
     render :new
   end
 
-  def edit
-  end
+  def edit; end
 
   # POST /text_components
   # POST /text_components.json
@@ -46,10 +46,8 @@ class TextComponentsController < ApplicationController
     @text_component = TextComponent.new(text_component_params)
 
     @text_component.triggers.each do |trigger|
-      if trigger.report.nil?
-        trigger.report = @text_component.report
-      end
-      trigger.conditions.each {|c| c.trigger = trigger } # both trigger and condition are new and need to be connected
+      trigger.report = @text_component.report if trigger.report.nil?
+      trigger.conditions.each { |c| c.trigger = trigger } # both trigger and condition are new and need to be connected
     end
 
     respond_to do |format|
@@ -88,65 +86,66 @@ class TextComponentsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_text_component
-      @text_component = TextComponent.find(params[:id])
-    end
 
-    def set_form_data
-      @sensors = Sensor.where(report: @report)
-      @events = Event.all
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_text_component
+    @text_component = TextComponent.find(params[:id])
+  end
 
-    def set_index_data
-      @diary_entry = DiaryEntry.new(report: @report, release: :final, moment: Time.zone.now)
+  def set_form_data
+    @sensors = Sensor.where(report: @report)
+    @events = Event.all
+  end
 
-      @text_components = TextComponent.includes(:report, :channels, :triggers)
+  def set_index_data
+    @diary_entry = DiaryEntry.new(report: @report, release: :final, moment: Time.zone.now)
 
-      filter_text_components
+    @text_components = TextComponent.includes(:report, :channels, :triggers)
 
-      @trigger_groups = @text_components.order('from_day, from_hour').group_by(&:trigger_ids)
+    filter_text_components
 
-      @trigger_groups = @trigger_groups.map do |trigger_ids, components|
+    @trigger_groups = @text_components.order('from_day, from_hour').group_by(&:trigger_ids)
 
-        components = components.map do |c|
-          TextComponentDecorator.new(c, @diary_entry)
-        end
-
-        [components.first.triggers, components]
+    @trigger_groups = @trigger_groups.map do |_trigger_ids, components|
+      components = components.map do |c|
+        TextComponentDecorator.new(c, @diary_entry)
       end
 
-      @trigger_groups = @trigger_groups.sort do |a, b|
-        group1, group2 = a.first, b.first
-        if group1.present? && group2.present?
-          group1.map(&:name).sort.first <=> group2.map(&:name).sort.first
-        else
-          group2.count <=> group1.count # groups with no trigger will be sorted to the end
-        end
-      end
-
-      @trigger_groups = @trigger_groups.to_h
+      [components.first.triggers, components]
     end
 
-    def filter_text_components
-      @text_components = @text_components.where(report: @report)
-      @filter = params[:filter] || {}
-      if @filter[:assignee_id].present?
-        @text_components = @text_components.where(assignee_id: @filter[:assignee_id])
+    @trigger_groups = @trigger_groups.sort do |a, b|
+      group1 = a.first
+      group2 = b.first
+      if group1.present? && group2.present?
+        group1.map(&:name).min <=> group2.map(&:name).min
+      else
+        group2.count <=> group1.count # groups with no trigger will be sorted to the end
       end
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def text_component_params
-      params.require(:text_component)
-        .permit(:heading, :introduction, :main_part, :closing, :from_day, :to_day,
-                :timeframe, :to_hour, :report_id, :topic_id, :assignee_id, :image, :image_alt, :delete_image,
-                :publication_status, :notes, trigger_ids: [], channel_ids: [],
-                question_answers_attributes: [:id, :question, :answer, :_destroy],
-                triggers_attributes: [:name, :from_hour, :to_hour,
-                                      :priority, :report_id,
-                                      :validity_period,
-                                      :event_ids => [],
-                                      conditions_attributes: [:id, :sensor_id, :from, :to, :_destroy]] )
+    @trigger_groups = @trigger_groups.to_h
+  end
+
+  def filter_text_components
+    @text_components = @text_components.where(report: @report)
+    @filter = params[:filter] || {}
+    if @filter[:assignee_id].present?
+      @text_components = @text_components.where(assignee_id: @filter[:assignee_id])
     end
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def text_component_params
+    params.require(:text_component)
+          .permit(:heading, :introduction, :main_part, :closing, :from_day, :to_day,
+                  :timeframe, :to_hour, :report_id, :topic_id, :assignee_id, :image, :image_alt, :delete_image,
+                  :publication_status, :notes, trigger_ids: [], channel_ids: [],
+                                               question_answers_attributes: %i[id question answer _destroy],
+                                               triggers_attributes: [:name, :from_hour, :to_hour,
+                                                                     :priority, :report_id,
+                                                                     :validity_period,
+                                                                     event_ids: [],
+                                                                     conditions_attributes: %i[id sensor_id from to _destroy]])
+  end
 end

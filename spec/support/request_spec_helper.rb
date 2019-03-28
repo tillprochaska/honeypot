@@ -1,5 +1,6 @@
-module RequestSpecHelper
+# frozen_string_literal: true
 
+module RequestSpecHelper
   include Warden::Test::Helpers
 
   def self.included(base)
@@ -25,5 +26,4 @@ module RequestSpecHelper
     user = FactoryBot.create(:user)
     sign_in user
   end
-
 end

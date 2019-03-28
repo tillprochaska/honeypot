@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Condition < ActiveRecord::Base
   belongs_to :trigger
   belongs_to :sensor

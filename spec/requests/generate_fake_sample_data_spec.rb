@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Generate debug Sample Data', type: :request do
@@ -25,7 +27,7 @@ RSpec.describe 'Generate debug Sample Data', type: :request do
     end
 
     it 'returns generated sensor readings as json' do
-      post url, params: {sample: sample_params, format: :json}
+      post url, params: { sample: sample_params, format: :json }
       expect(JSON.parse(response.body).size).to eq 3
     end
   end

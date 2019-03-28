@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropGeneratedColumnsFromDiaryEntries < ActiveRecord::Migration[5.0]
   def change
     remove_column :diary_entries, :heading, :string

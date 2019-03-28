@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiaryEntry < ActiveRecord::Base
   BREAK_AFTER = 500 # characters
 
@@ -5,8 +7,8 @@ class DiaryEntry < ActiveRecord::Base
     self.moment ||= Time.now
   end
 
-  enum release: [:final, :debug]
-  LIMIT = 30000
+  enum release: %i[final debug]
+  LIMIT = 30_000
   belongs_to :report
 
   def live?
@@ -31,13 +33,13 @@ class DiaryEntry < ActiveRecord::Base
       if DiaryEntry.send(self.release).count >= DiaryEntry::LIMIT
         DiaryEntry.send(self.release).first.destroy
       end
-      self.save!
+      save!
     end
   end
 
-
-  def heading 
+  def heading
     return '' if sorted_components.empty?
+
     render(sorted_components.first, :heading)
   end
 
@@ -45,26 +47,23 @@ class DiaryEntry < ActiveRecord::Base
     introductions = sorted_components.first(3).collect do |component|
       render(component, :introduction)
     end
-    introductions = introductions.select{|i| i.present?}
+    introductions = introductions.select(&:present?)
     ApplicationController.render(
       partial: 'diary_entries/introduction',
       locals: {
-        items: introductions,
+        items: introductions
       }
     )
   end
 
-
   def main_part
-    result = ""
+    result = ''
     part = ''
     stack = sorted_components.clone
-    until stack.empty? do
-      until part.length >= BREAK_AFTER || stack.empty? do
+    until stack.empty?
+      until part.length >= BREAK_AFTER || stack.empty?
         current_component = stack.shift
-        if result.present? # no subheading at the very beginning
-          subheading ||= current_component.heading
-        end
+        subheading ||= current_component.heading if result.present? # no subheading at the very beginning
         part += ' ' if part.present?
         part += render(current_component, :main_part)
 

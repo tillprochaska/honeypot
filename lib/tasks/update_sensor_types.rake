@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 namespace :sensorstory do
-  desc "Add min, max and fractionDigits to certain sensor types"
-  task :update_sensortypes => :environment do
+  desc 'Add min, max and fractionDigits to certain sensor types'
+  task update_sensortypes: :environment do
     SensorType.transaction do
       SensorType.where(unit: '?...?').update_all(unit: '')
       SensorType.where(unit: '0-10').update_all(unit: '')
@@ -12,7 +14,7 @@ namespace :sensorstory do
       SensorType.find_by!(property: 'pH Value').update_attributes!(min: -10.0, max: 45.0, fractionDigits: 1, unit: '')
       SensorType.find_by!(property: 'pH Value').update_attributes!(min: 0.0, max: 14.0, fractionDigits: 1, unit: '')
 
-      #SensorType.find_by('Temperature-Humidity-Index').update_attributes!(min: 1, max: 100, fractionDigits: 0)
+      # SensorType.find_by('Temperature-Humidity-Index').update_attributes!(min: 1, max: 100, fractionDigits: 0)
       SensorType.find_by!(property: 'Milchmenge').update_attributes!(min: 0.0, max: 80.0, fractionDigits: 1, unit: 'Liter')
       SensorType.find_by!(property: 'Movement').update_attributes!(min: 0, max: 100, fractionDigits: 0, unit: '%') # or should it be "Pedometer"?
       SensorType.find_by!(property: 'Humidity').update_attributes!(min: 0, max: 100, fractionDigits: 0, unit: '%') # or should it be "Relative Humidity"?
@@ -24,8 +26,8 @@ namespace :sensorstory do
     end
   end
 
-  desc "Change milk quantity sensor type unit to kilogram"
-  task :update_milk_quantity_unit => :environment do
+  desc 'Change milk quantity sensor type unit to kilogram'
+  task update_milk_quantity_unit: :environment do
     SensorType.transaction do
       SensorType.find_by!(property: 'Milchmenge').update_attributes!(unit: 'Kilogramm')
       SensorType.find_by!(property: 'Movement').update_attributes!(unit: 'Prozent')

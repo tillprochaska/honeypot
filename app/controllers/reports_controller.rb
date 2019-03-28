@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReportsController < ApplicationController
   before_action :authenticate_user!, except: %i[current present preview]
 
@@ -33,13 +35,14 @@ class ReportsController < ApplicationController
   end
 
   private
+
   def query_params
     result = {}
-    if params[:at]
-      result[:point_in_time] = Time.zone.parse(params[:at])
-    else
-      result[:point_in_time] = Time.zone.now
-    end
+    result[:point_in_time] = if params[:at]
+                               Time.zone.parse(params[:at])
+                             else
+                               Time.zone.now
+                             end
     result
   end
 
@@ -48,6 +51,6 @@ class ReportsController < ApplicationController
   end
 
   def report_params
-    params.require(:report).permit(:name, :start_date, :duration, :video, variables_attributes: [:value, :id])
+    params.require(:report).permit(:name, :start_date, :duration, :video, variables_attributes: %i[value id])
   end
 end

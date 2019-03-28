@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Report, type: :model do
@@ -9,7 +11,7 @@ RSpec.describe Report, type: :model do
   end
 
   describe '#destroy' do
-    let(:variables) { {a: 1, b: 2, c: 3}.collect {|k,v| create(:variable, key: k, value: v)} }
+    let(:variables) { { a: 1, b: 2, c: 3 }.collect { |k, v| create(:variable, key: k, value: v) } }
     let (:report) { create(:report, variables: variables) }
     it 'destroys dependent variables' do
       report
@@ -19,7 +21,7 @@ RSpec.describe Report, type: :model do
 
   describe '#active_sensor_story_components' do
     subject { report.active_sensor_story_components(diary_entry) }
-    let(:sensor)          { create :sensor }
+    let(:sensor) { create :sensor }
     it { is_expected.to be_empty }
 
     context 'given report has one text_component' do
@@ -51,7 +53,7 @@ RSpec.describe Report, type: :model do
           end
 
           describe '#active_sensor_story_components :debug' do
-            let(:release) { :debug}
+            let(:release) { :debug }
             it { is_expected.to include text_component }
           end
         end
@@ -80,7 +82,7 @@ RSpec.describe Report, type: :model do
           create(:sensor_reading, sensor: sensor, calibrated_value: 10)
         end
 
-        describe'then the report contains both active text components' do
+        describe 'then the report contains both active text components' do
           it 'ie. the lower component and the upper component' do
             expect(subject).to contain_exactly(upper_component, lower_component)
           end

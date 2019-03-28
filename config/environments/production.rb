@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -80,13 +82,13 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.paperclip_defaults = {
-    :storage => :s3,
-    :preserve_files => true,
-    :s3_host_name => 's3.eu-central-1.amazonaws.com',
-    :bucket => ENV.fetch('S3_BUCKET_NAME'),
-    :access_key_id => ENV.fetch('AWS_ACCESS_KEY_ID'),
-    :secret_access_key => ENV.fetch('AWS_SECRET_ACCESS_KEY'),
-    :s3_region => 'eu-central-1'
+    storage: :s3,
+    preserve_files: true,
+    s3_host_name: 's3.eu-central-1.amazonaws.com',
+    bucket: ENV.fetch('S3_BUCKET_NAME'),
+    access_key_id: ENV.fetch('AWS_ACCESS_KEY_ID'),
+    secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY'),
+    s3_region: 'eu-central-1'
   }
 
   config.action_controller.page_cache_directory = Rails.root.join('public')

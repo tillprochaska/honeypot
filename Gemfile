@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gem 'pg'
@@ -32,28 +34,28 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
 
 gem 'bootstrap'
-gem 'haml-rails'
-gem 'simple_form'
 gem 'cocoon'
-gem 'rack-cors', :require => 'rack/cors'
-gem 'whenever', :require => false
 gem 'devise'
+gem 'haml-rails'
+gem 'rack-cors', require: 'rack/cors'
+gem 'simple_form'
+gem 'whenever', require: false
 
 # Image upload to Amazon S3 Storage Cloud
-gem 'paperclip'
+gem 'actionpack-page_caching'
 gem 'aws-sdk-s3'
-gem "actionpack-page_caching"
+gem 'paperclip'
 
 gem 'puma'
 
 group :development, :test do
   # Use sqlite3 as the database and keep the installation setup low
   gem 'factory_bot_rails'
-  gem 'rspec-rails'
   gem 'pry'
-  gem 'whenever-test'
-  gem 'timecop'
   gem 'rails-controller-testing', require: false
+  gem 'rspec-rails'
+  gem 'timecop'
+  gem 'whenever-test'
 end
 
 group :development do
@@ -64,25 +66,25 @@ group :development do
   gem 'spring'
 
   gem 'capistrano'
+  gem 'capistrano-db-tasks', require: false
   gem 'capistrano-rails'
-  gem "capistrano-db-tasks", require: false
-  gem 'highline'
   gem 'guard'
   gem 'guard-rspec', require: false
-  gem 'seed_dump'
+  gem 'highline'
   gem 'rails-erd'
+  gem 'rubocop', require: false
+  gem 'seed_dump'
 end
 
 group :test do
-  gem 'cucumber-rails', require: false
   gem 'cucumber-api-steps', require: false
+  gem 'cucumber-rails', require: false
   # database_cleaner is not required, but highly recommended
   gem 'database_cleaner'
   #   end
-  gem 'selenium-webdriver'
-  gem 'chromedriver-helper'
   gem 'capybara-screenshot'
+  gem 'chromedriver-helper'
+  gem 'selenium-webdriver'
   gem 'vcr'
   gem 'webmock'
 end
-

@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 class ChannelsController < ApplicationController
-  before_action :set_channel, only: [:edit, :update]
+  before_action :set_channel, only: %i[edit update]
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def update
     respond_to do |format|

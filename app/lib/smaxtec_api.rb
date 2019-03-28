@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SmaxtecApi
   require 'net/http'
   require 'date'
@@ -9,7 +11,7 @@ class SmaxtecApi
     'Temperature' => 'temp',
     'pH Value' => 'ph',
     'Movement' => 'act_index'
-  }
+  }.freeze
   EVENT_MAPPING = {
     'Event: Drink Cycles' => 101,
     'Event: Drink cycle increase' => 102,
@@ -30,49 +32,47 @@ class SmaxtecApi
     'Event: Low heat stress' => 601,
     'Event: Medium heat stress' => 602,
     'Event: High heat stress' => 603
-  }
+  }.freeze
   DEVICE_MAPPING = {
     'Temperature' => 'temp',
     'Relative Humidity' => 'hum',
     'THI' => 'temp_hum_index'
-  }
-
+  }.freeze
 
   def update_device_readings
     puts "[#{Time.zone.now}] Started update_device_readings"
-    abort("missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD") unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
+    abort('missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD') unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
     Sensor.where.not(device_id: nil).each do |sensor|
       device_type = DEVICE_MAPPING[sensor.property]
-      if device_type
-        puts "Getting device readings from Smaxtec for device sensor: #{sensor.name}"
-        readings = device_readings(sensor)
-        if readings
-          readings.each do |reading|
-            if reading.new_record?
-              if reading.save
-                puts "New device reading: #{reading.created_at} - #{reading.calibrated_value} #{reading.sensor.sensor_type.unit}"
-              else
-                puts reading.errors
-              end
+      next unless device_type
+
+      puts "Getting device readings from Smaxtec for device sensor: #{sensor.name}"
+      readings = device_readings(sensor)
+      if readings
+        readings.each do |reading|
+          if reading.new_record?
+            if reading.save
+              puts "New device reading: #{reading.created_at} - #{reading.calibrated_value} #{reading.sensor.sensor_type.unit}"
+            else
+              puts reading.errors
             end
           end
-        else
-          puts "No new device readings for sensor: #{sensor.name}"
         end
+      else
+        puts "No new device readings for sensor: #{sensor.name}"
       end
     end
   end
 
-
   def device_readings(sensor)
     metric = DEVICE_MAPPING[sensor.property]
-    temp_data = send_api_request('/data/query', { :device_id => sensor.device_id, :metric => metric, :from_date => Time.now.to_i - 43200, :to_date => Time.now.to_i })
+    temp_data = send_api_request('/data/query', device_id: sensor.device_id, metric: metric, from_date: Time.now.to_i - 43_200, to_date: Time.now.to_i)
     if temp_data && temp_data['data'].count > 1
       readings = []
       temp_data['data'].each do |data|
         timestamp = data[0]
         value = data[1]
-        readings << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.zone.strptime(timestamp.to_s,'%s'), updated_at: Time.zone.strptime(timestamp.to_s,'%s')) do |reading|
+        readings << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.zone.strptime(timestamp.to_s, '%s'), updated_at: Time.zone.strptime(timestamp.to_s, '%s')) do |reading|
           reading.calibrated_value = value
           reading.uncalibrated_value = value
         end
@@ -83,47 +83,45 @@ class SmaxtecApi
     end
   end
 
-
   def update_events
-    puts "[#{Time.zone.now.to_s}] Started update_events"
-    abort("missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD") unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
+    puts "[#{Time.zone.now}] Started update_events"
+    abort('missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD') unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
     Sensor.where.not(animal_id: nil).each do |sensor|
       event_type = EVENT_MAPPING[sensor.property]
-      if event_type
-        puts "Getting latest events from Smaxtec for event sensor: #{sensor.name}"
-        events = smaxtec_events(sensor)
-        if events
-          events.each do |event|
-            if event.new_record?
-              if event.save
-                puts "New event: #{event.created_at} - #{event.calibrated_value} #{event.sensor.sensor_type.unit}"
-              else
-                puts event.errors
-              end
+      next unless event_type
+
+      puts "Getting latest events from Smaxtec for event sensor: #{sensor.name}"
+      events = smaxtec_events(sensor)
+      if events
+        events.each do |event|
+          if event.new_record?
+            if event.save
+              puts "New event: #{event.created_at} - #{event.calibrated_value} #{event.sensor.sensor_type.unit}"
+            else
+              puts event.errors
             end
           end
-        else
-          puts "No new events for sensor: #{sensor.name}"
         end
+      else
+        puts "No new events for sensor: #{sensor.name}"
       end
     end
   end
 
-
   def smaxtec_events(sensor)
     # Look for events in the past 30 days (events occur less frequently than sensor readings)
-    temp_data = send_api_request('/event/query', { :animal_id => sensor.animal_id, :from_date => Time.now.to_i - 2592000, :to_date => Time.now.to_i, :limit => 100 })
+    temp_data = send_api_request('/event/query', animal_id: sensor.animal_id, from_date: Time.now.to_i - 2_592_000, to_date: Time.now.to_i, limit: 100)
     if temp_data && temp_data['data'].count > 1
       events = []
       event_type = EVENT_MAPPING[sensor.property]
       temp_data['data'].each do |data|
         timestamp = data['timestamp']
         value = 1
-        if data['event_type'] == event_type
-          events << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.strptime(timestamp.to_s,'%s'), updated_at: Time.strptime(timestamp.to_s,'%s')) do |event|
-            event.calibrated_value = value
-            event.uncalibrated_value = value
-          end
+        next unless data['event_type'] == event_type
+
+        events << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.strptime(timestamp.to_s, '%s'), updated_at: Time.strptime(timestamp.to_s, '%s')) do |event|
+          event.calibrated_value = value
+          event.uncalibrated_value = value
         end
       end
       return events
@@ -132,10 +130,9 @@ class SmaxtecApi
     end
   end
 
-
   def update_sensor_readings
     puts "[#{Time.now}] Started update_sensor_readings"
-    abort("missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD") unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
+    abort('missing SMAXTEC_API_EMAIL and SMAXTEC_API_PASSWORD') unless SMAXTEC_API_PASSWORD && SMAXTEC_API_PASSWORD
     Sensor.where.not(animal_id: nil).each do |sensor|
       puts "Getting latest sensory data from Smaxtec for sensor: #{sensor.name}"
       readings = smaxtec_sensor_readings(sensor)
@@ -155,7 +152,6 @@ class SmaxtecApi
     end
   end
 
-
   def smaxtec_sensor_readings(sensor)
     metric = PROPERTY_MAPPING[sensor.property]
     event = EVENT_MAPPING[sensor.property]
@@ -166,14 +162,14 @@ class SmaxtecApi
       end
       return nil
     end
-    #animal_id = '5722099ea80a5f54c631513d' # name = Arabella
-    temp_data = send_api_request('/data/query', { :animal_id => sensor.animal_id, :metric => metric, :from_date => Time.now.to_i - 43200, :to_date => Time.now.to_i })
+    # animal_id = '5722099ea80a5f54c631513d' # name = Arabella
+    temp_data = send_api_request('/data/query', animal_id: sensor.animal_id, metric: metric, from_date: Time.now.to_i - 43_200, to_date: Time.now.to_i)
     if temp_data && temp_data['data'].count > 1
       readings = []
       temp_data['data'].each do |data|
         timestamp = data[0]
         value = data[1]
-        readings << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.strptime(timestamp.to_s,'%s'), updated_at: Time.strptime(timestamp.to_s,'%s')) do |reading|
+        readings << Sensor::Reading.find_or_initialize_by(sensor_id: sensor.id, smaxtec_timestamp: timestamp, created_at: Time.strptime(timestamp.to_s, '%s'), updated_at: Time.strptime(timestamp.to_s, '%s')) do |reading|
           reading.calibrated_value = value
           reading.uncalibrated_value = value
         end
@@ -184,15 +180,14 @@ class SmaxtecApi
     end
   end
 
-
   def last_smaxtec_sensor_reading(sensor)
     metric = PROPERTY_MAPPING[sensor.property]
     unless metric
       puts "Sensor #{sensor.name} has unrecognized property: #{sensor.property}"
       return nil
     end
-    #animal_id = '5722099ea80a5f54c631513d' # name = Arabella
-    temp_data = send_api_request('/data/query', { :animal_id => sensor.animal_id, :metric => metric, :from_date => Time.now.to_i - 3600, :to_date => Time.now.to_i })
+    # animal_id = '5722099ea80a5f54c631513d' # name = Arabella
+    temp_data = send_api_request('/data/query', animal_id: sensor.animal_id, metric: metric, from_date: Time.now.to_i - 3600, to_date: Time.now.to_i)
 
     if temp_data && temp_data['data'].count > 1
       last_entry = temp_data['data'].last
@@ -207,10 +202,9 @@ class SmaxtecApi
     end
   end
 
-
   def get_jwt
     uri = URI(SMAXTEC_API_BASE_URL + '/user/get_token')
-    params = { :email => SMAXTEC_API_EMAIL, :password => SMAXTEC_API_PASSWORD }
+    params = { email: SMAXTEC_API_EMAIL, password: SMAXTEC_API_PASSWORD }
     uri.query = URI.encode_www_form(params)
 
     response = Net::HTTP.get_response(uri)
@@ -226,17 +220,14 @@ class SmaxtecApi
     end
   end
 
-
-  def send_api_request(url, params=nil)
+  def send_api_request(url, params = nil)
     @jwt ||= get_jwt
     uri = URI(SMAXTEC_API_BASE_URL + url)
 
-    if params
-      uri.query = URI.encode_www_form(params)
-    end
+    uri.query = URI.encode_www_form(params) if params
 
     http = Net::HTTP.new(uri.host, uri.port)
-    #http.set_debug_output($stdout)
+    # http.set_debug_output($stdout)
     http.use_ssl = true
     req = Net::HTTP::Get.new(uri.request_uri)
     req['Authorization'] = 'Bearer ' + @jwt
@@ -250,5 +241,4 @@ class SmaxtecApi
       puts 'API request failed'
     end
   end
-
 end

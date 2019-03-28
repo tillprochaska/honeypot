@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameIntentionEnumToRelease < ActiveRecord::Migration[5.0]
   def change
     rename_column :diary_entries, :intention, :release

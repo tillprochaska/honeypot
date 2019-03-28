@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class ActuatorsController < ApplicationController
-  before_action :set_actuator, only: [:show, :edit, :activate, :deactivate, :update, :destroy]
+  before_action :set_actuator, only: %i[show edit activate deactivate update destroy]
 
   # GET /actuators
   # GET /actuators.json
@@ -9,8 +11,7 @@ class ActuatorsController < ApplicationController
 
   # GET /actuators/1
   # GET /actuators/1.json
-  def show
-  end
+  def show; end
 
   # GET /actuators/new
   def new
@@ -18,8 +19,7 @@ class ActuatorsController < ApplicationController
   end
 
   # GET /actuators/1/edit
-  def edit
-  end
+  def edit; end
 
   def activate
     @actuator.activate!(synchronous: true)
@@ -72,13 +72,14 @@ class ActuatorsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_actuator
-      @actuator = Actuator.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def actuator_params
-      params.require(:actuator).permit(:name, :port, :function)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_actuator
+    @actuator = Actuator.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def actuator_params
+    params.require(:actuator).permit(:name, :port, :function)
+  end
 end

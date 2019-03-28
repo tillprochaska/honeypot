@@ -1,16 +1,14 @@
+# frozen_string_literal: true
+
 def number_or_nil(number_string)
-  begin
-    return Integer(number_string)
-  rescue
-    nil
-  end
+  Integer(number_string)
+rescue StandardError
+  nil
 end
 
 def within_text_component_section(header)
   within('.form__section', text: header) do
-    if page.has_css?('a', text: 'Edit')
-      find('a', text: 'Edit').click
-    end
+    find('a', text: 'Edit').click if page.has_css?('a', text: 'Edit')
     yield
   end
 end
@@ -87,7 +85,7 @@ end
 
 When(/^I add a condition$/) do
   find('button', text: /Add sensor/).click
-  expect(page).to have_css('button[type="button"].btn-danger', {text: '×'}) # wait until it's there
+  expect(page).to have_css('button[type="button"].btn-danger', text: '×') # wait until it's there
 end
 
 When(/^(?:when )?I choose the sensor "([^"]*)" to trigger this trigger$/) do |sensor|
@@ -95,7 +93,7 @@ When(/^(?:when )?I choose the sensor "([^"]*)" to trigger this trigger$/) do |se
 end
 
 When(/^I define a range from "([^"]*)" to "([^"]*)" to cover the relevant values$/) do |arg1, arg2|
-  execute_script("$('.range').data('range').value('#{arg1},#{arg2}')");
+  execute_script("$('.range').data('range').value('#{arg1},#{arg2}')")
 end
 
 When(/^I click on update$/) do
@@ -135,8 +133,7 @@ Given(/^for my current report I have these triggers prepared:$/) do |table|
   table.hashes.each do |row|
     trigger = create(:trigger,
                      report: Report.current,
-                     name: row['Trigger'],
-                    )
+                     name: row['Trigger'])
     sensor = Sensor.find_by(name: row['Sensor']) || create(:sensor, name: row['Sensor'], report: Report.current)
     create(:condition, sensor: sensor, trigger: trigger, from: row['From'], to: row['To'])
   end
@@ -153,11 +150,11 @@ end
 Given(/^the latest sensor data looks like this:$/) do |table|
   table.hashes.each do |row|
     sensor = Sensor.find_by(name: row['Sensor'])
-    reading_attr = { sensor: sensor, calibrated_value: row['Calibrated Value'].to_i}
+    reading_attr = { sensor: sensor, calibrated_value: row['Calibrated Value'].to_i }
     reading = create(:sensor_reading, reading_attr)
     created_at_code = row['Created at']
     if created_at_code
-      reading.created_at = eval(created_at_code.downcase.gsub(' ','.'))
+      reading.created_at = eval(created_at_code.downcase.tr(' ', '.'))
       reading.save!
     end
   end
@@ -268,7 +265,7 @@ Then(/^I can read this text:$/) do |string|
 end
 
 Given(/^I have a sensor with a I2C address "([^"]*)"$/) do |address|
-  @sensor = create(:sensor, :address => address)
+  @sensor = create(:sensor, address: address)
 end
 
 Then(/^now the sensor has a new sensor reading in the database$/) do
@@ -276,7 +273,7 @@ Then(/^now the sensor has a new sensor reading in the database$/) do
 end
 
 When(/^I choose an address "([^"]*)"$/) do |address|
-  fill_in "Address", :with => address
+  fill_in 'Address', with: address
 end
 
 When(/^by the way, the "([^"]*)" attribute above is a string$/) do |arg1|
@@ -288,7 +285,7 @@ When(/^I select "([^"]*)" from the priorities$/) do |selection|
 end
 
 Then(/^my heading has become very important$/) do
-  expect(page).to have_text("Priority: high")
+  expect(page).to have_text('Priority: high')
   @trigger.reload
   expect(@trigger.priority).to eq 'high'
 end
@@ -298,7 +295,7 @@ Given(/^I have (\d+) entries for a sensor in my database$/) do |quantity|
     @sensor = create(:sensor)
     Sensor::Reading.transaction do
       quantity.to_i.times do
-        create(:sensor_reading, :sensor => @sensor)
+        create(:sensor_reading, sensor: @sensor)
       end
     end
   end
@@ -327,10 +324,10 @@ Given(/^I have these sensors and sensor types in my database$/) do |table|
 end
 
 When(/^I add a video URL to the report$/) do
-  click_on "Edit"
+  click_on 'Edit'
   @url = '//example.com/embedded/live/example?autoplay=1'
-  fill_in "Video URL", with: @url
-  click_on "Update Report"
+  fill_in 'Video URL', with: @url
+  click_on 'Update Report'
 end
 
 Then(/^I can watch a video stream that points to this url$/) do
@@ -339,7 +336,7 @@ Then(/^I can watch a video stream that points to this url$/) do
 end
 
 When(/^I set the component to trigger only for recent data within the last "([^"]*)" hours$/) do |hours|
-  fill_in "Validity period", with: hours
+  fill_in 'Validity period', with: hours
 end
 
 Then(/^this trigger has a validity period of "([^"]*)" hours$/) do |hours|
@@ -395,22 +392,22 @@ end
 
 Given(/^I have these active triggers:$/) do |table|
   table.hashes.each do |row|
-    create(:trigger, :active, {
-      name: row['Trigger'],
-      report: Report.current
-    })
+    create(:trigger, :active,
+           name: row['Trigger'],
+           report: Report.current)
   end
 end
 
 Then(/^I should see only one of the following:$/) do |string|
-  parts = string.split('[OR]').collect {|p| p.strip }
-  seen_parts = parts.select {|p| page.text.include?(p) }
+  parts = string.split('[OR]').collect(&:strip)
+  seen_parts = parts.select { |p| page.text.include?(p) }
   expect(seen_parts.length).to eq 1
 end
 
 Given(/^I have these custom variables for my report:$/) do |table|
   table.hashes.each do |row|
-    key, value = row['Key'], row['Value']
+    key = row['Key']
+    value = row['Value']
     create(:variable, report: Report.current, key: key, value: value)
   end
 end
@@ -466,9 +463,8 @@ Then(/^according to the live report it is summer again!$/) do |string|
   expect(page).to have_text(string)
 end
 
-
 Given(/^there is also a medium prioritized, active component with a really long text$/) do
-  main_part = "Blaaa" + 500.times.collect{ "a"}.join + "aaahhhh!"
+  main_part = 'Blaaa' + 500.times.collect { 'a' }.join + 'aaahhhh!'
   trigger = create(:trigger, :active, priority: :medium)
   create(:text_component, :active,
          report: Report.current,
@@ -502,7 +498,7 @@ Then(/^a request will be sent to this url:$/) do |url|
 end
 
 Then(/^the request payload contains this data:$/) do |string|
-  payload = "args=" + @command.argument
+  payload = 'args=' + @command.argument
   expect(payload).to eq string
 end
 
@@ -605,7 +601,7 @@ end
 
 When(/^I add a trigger and choose "([^"]*)"$/) do |trigger|
   within_text_component_section('Trigger') do
-    find('.choices', { wait: 10 }).click
+    find('.choices', wait: 10).click
     find('.choices__item', text: trigger).click
   end
 end
@@ -619,15 +615,13 @@ Then(/^the text component is connected to both triggers$/) do
   expect(@text_component.triggers.count).to eq 2
 end
 
-
 Given(/^I have these text components with the corresponding schedule in my database:$/) do |table|
   table.hashes.each do |row|
     create(:text_component,
            main_part: row['Text component'],
            report: Report.current,
            from_day: number_or_nil(row['From day']),
-           to_day: number_or_nil(row['To day'])
-          )
+           to_day: number_or_nil(row['To day']))
   end
 end
 
@@ -644,9 +638,7 @@ end
 Given(/^I have a sensor for "([^"]*)"$/) do |property|
   @sensor = create(:sensor,
                    report: Report.current,
-                   sensor_type: create(:sensor_type, property: property)
-                  )
-
+                   sensor_type: create(:sensor_type, property: property))
 end
 
 When(/^I visit its sensor page$/) do
@@ -655,18 +647,18 @@ end
 
 When(/^all subsequent sensor readings will be intercepted for a while$/) do
   # send and accept JSON
-  header 'Accept', "application/json"
-  header 'Content-Type', "application/json"
+  header 'Accept', 'application/json'
+  header 'Content-Type', 'application/json'
 
   expect(@sensor.sensor_readings).to be_empty
-  @values = [3,5,7,11,13,17].shuffle
+  @values = [3, 5, 7, 11, 13, 17].shuffle
   @values.each do |value|
     input = {
       "sensor_id": @sensor.id,
       "calibrated_value": value,
-      "uncalibrated_value": value,
+      "uncalibrated_value": value
     }.to_json
-    request report_sensor_readings_path(Report.current, @sensor), { method: :post, input: input }
+    request report_sensor_readings_path(Report.current, @sensor), method: :post, input: input
   end
   expect(@sensor.sensor_readings).to be_empty
 end
@@ -684,8 +676,8 @@ end
 
 Then(/^I can see the calibration values on the sensor page$/) do
   visit report_sensor_path(Report.current, @sensor)
-  expect(page).to have_text("17")
-  expect(page).to have_text("3")
+  expect(page).to have_text('17')
+  expect(page).to have_text('3')
 end
 
 Given(/^this sensor was calibrated already$/) do
@@ -709,8 +701,7 @@ Given(/^some text components are active at certain hours:$/) do |table|
            heading: row['Heading'],
            main_part: row['Main part'],
            from_hour: Time.parse(row['From']).hour,
-           to_hour: Time.parse(row['To']).hour,
-          )
+           to_hour: Time.parse(row['To']).hour)
   end
 end
 
@@ -729,10 +720,8 @@ When(/^I update the text component$/) do
 end
 
 Given(/^our sensor live report has a channel "([^"]*)"$/) do |name|
-  @channel =  Channel.find_by(name: name)
-  unless @channel
-    @channel = create(:channel, name: name, report: Report.current)
-  end
+  @channel = Channel.find_by(name: name)
+  @channel ||= create(:channel, name: name, report: Report.current)
 end
 
 Given(/^a topic "([^"]*)"$/) do |name|
@@ -744,9 +733,9 @@ Given(/^we created a text component for it that is active right now$/) do
     :text_component,
     :active,
     report: Report.current,
-    main_part: "Got milk?",
+    main_part: 'Got milk?',
     channels: [@channel],
-    topic: @topic,
+    topic: @topic
   )
 end
 
@@ -769,13 +758,12 @@ end
 
 Given(/^that is more easy to savvy:$/) do |string|
   @easy = string
-  @text_component = create(:text_component, heading: "easy one", main_part: @easy, report: Report.current)
+  @text_component = create(:text_component, heading: 'easy one', main_part: @easy, report: Report.current)
 end
 
 When(/^I edit the easier text component$/) do
   edit_existing_text_component
 end
-
 
 When(/^choose "([^"]*)" as a channel$/) do |channel|
   within_text_component_section('Output') do
@@ -800,7 +788,7 @@ Then(/^the easier text will go into the channel "([^"]*)"$/) do |channel_name|
 end
 
 Then(/^the easier text will not appear in main story$/) do
-  visit "/reports/current"
+  visit '/reports/current'
   expect(page).not_to have_text(@easy)
 end
 
@@ -818,14 +806,14 @@ When(/^I fill the empty question with:$/) do |string|
 end
 
 When(/^I enter the missing answer:$/) do |string|
-  @answer_text = string.gsub("\n", ' ')
+  @answer_text = string.tr("\n", ' ')
   find('.text_component_question_answers_answer .answer-input', text: /^$/).set(@answer_text)
 end
 
-Then(/^a new question\/answer was added to the database$/) do
+Then(%r{^a new question/answer was added to the database$}) do
   expect(page).to have_text('Text component was successfully updated.')
   @text_component.reload
-  qa = (@text_component.question_answers.last)
+  qa = @text_component.question_answers.last
   expect(@question_answers).not_to include(qa)
   expect(qa.question).to be_present
   expect(qa.answer).to be_present
@@ -847,7 +835,7 @@ When(/^two more input fields pop up, one for the new question and one for the ne
   expect(page).to have_css('.text_component_question_answers_answer .answer-input', text: /^$/, count: 1)
 end
 
-Given(/^we have an active text component with these question\/answers:$/) do |table|
+Given(%r{^we have an active text component with these question/answers:$}) do |table|
   text_component = create(:text_component, report: Report.current)
   table.hashes.each do |row|
     @question = row['Question']
@@ -871,7 +859,7 @@ Then(/^the button disappears and the answer shows up$/) do
   expect(page).not_to have_text(@question)
 end
 
-Given(/^we have different text components, each having question\/answers$/) do
+Given(%r{^we have different text components, each having question/answers$}) do
   # sophisticated test set up
   create(:important_text_component,
          report: Report.current,
@@ -882,22 +870,20 @@ Given(/^we have different text components, each having question\/answers$/) do
          question_answers: [
            build(:question_answer, question: 'Is this a lot?', answer: 'I would say, that\'s quite a lot.'),
            build(:question_answer, question: 'Want more?', answer: 'I hope for it.')
-  ]
-        )
+         ])
   create(:text_component,
          report: Report.current,
          heading: 'This heading will not be visible',
          introduction: '',
          main_part: 'It was hot and stuffy in the stable.',
          closing: 'I hope it gets colder tomorrow.',
-         question_answers: [build(:question_answer, question: 'How hot was it?', answer: 'Unbearable.')]
-        )
+         question_answers: [build(:question_answer, question: 'How hot was it?', answer: 'Unbearable.')])
 end
 
 def check_expanding_report(string)
   parts = string.split("\n")
   parts.each do |part|
-    expect(page).to have_text(part.gsub("\n", ''))
+    expect(page).to have_text(part.delete("\n"))
   end
 end
 
@@ -914,7 +900,7 @@ Then(/^the text expands like this:$/) do |string|
   check_expanding_report(string)
 end
 
-Given(/^we have an active text component for that topic with these question\/answers:$/) do |table|
+Given(%r{^we have an active text component for that topic with these question/answers:$}) do |table|
   @text_component = create(:text_component,
                            channels: [Channel.chatbot],
                            topic: @topic,
@@ -927,7 +913,7 @@ Given(/^we have an active text component for that topic with these question\/ans
   end
 end
 
-Given(/^we have an active text component with the id (\d+) for that topic with these question\/answers:$/) do |id, table|
+Given(%r{^we have an active text component with the id (\d+) for that topic with these question/answers:$}) do |id, table|
   @text_component = create(:text_component,
                            report: Report.current,
                            channels: [Channel.chatbot],
@@ -988,7 +974,6 @@ Given(/^we have these text components:$/) do |table|
       report = Report.find_by(name: row['Report']) || create(:report, name: row['Report'])
     end
 
-
     create(:text_component, report: report, heading: row['Text component'], assignee: assignee)
   end
 end
@@ -999,14 +984,12 @@ end
 
 def log_in(user)
   visit '/users/sign_in'
-  fill_in "user_email", :with => user.email
-  fill_in "user_password", :with => user.password
-  click_button "Log in"
+  fill_in 'user_email', with: user.email
+  fill_in 'user_password', with: user.password
+  click_button 'Log in'
 end
 
-def log_out
-
-end
+def log_out; end
 
 Given(/^(?:I am logged in|I log in again)$/) do
   log_in(@user)
@@ -1069,7 +1052,6 @@ Then(/^I see the error message in section "([^"]*)":$/) do |section, table|
     end
   end
 end
-
 
 Then(/^I see error message telling me the user name can't be blank$/) do
   within('.form-group', text: 'Name') do
@@ -1173,7 +1155,7 @@ end
 Then(/^I will see a different generated text as if I would switch to "([^"]*)"$/) do |report_name|
   expect(find('.live-report')).to have_text("It's about sensory data")
   switch_report(report_name)
-  expect(find('.live-report')).to have_text("Robots are conquering the world")
+  expect(find('.live-report')).to have_text('Robots are conquering the world')
 end
 
 Given(/^we have these text components for the chatbot:$/) do |table|
@@ -1182,19 +1164,18 @@ Given(/^we have these text components for the chatbot:$/) do |table|
            main_part: row['Text component'],
            channels: [Channel.chatbot],
            report_id: row['report_id'],
-           topic: (Topic.find_by(name: row['Topic']) || create(:topic, name: row['Topic']))
-          )
+           topic: (Topic.find_by(name: row['Topic']) || create(:topic, name: row['Topic'])))
   end
 end
 
 Given(/^we have these diary entries in our database:$/) do |table|
   table.hashes.each do |row|
     report_id = row['Report id']
-    if report_id
-      report = Report.find_by(id: report_id) || create(:report, id: report_id)
-    else
-      report = Report.current
-    end
+    report = if report_id
+               Report.find_by(id: report_id) || create(:report, id: report_id)
+             else
+               Report.current
+             end
     create(:diary_entry, id: row['Id'], report: report, release: row['release'], moment: row['Moment'])
   end
 end
@@ -1202,16 +1183,16 @@ end
 Then(/^the JSON response should include the diary entries (\d+) and (\d+)$/) do |id1, id2|
   json_response = JSON.parse(last_response.body)
   expect(json_response.count).to eq 2
-  expect(json_response[0]["id"]).to eq id1.to_i
-  expect(json_response[1]["id"]).to eq id2.to_i
+  expect(json_response[0]['id']).to eq id1.to_i
+  expect(json_response[1]['id']).to eq id2.to_i
 end
 
 Then(/^the JSON response should include the diary entries (\d+), (\d+) and the live entry$/) do |id1, id2|
   json_response = JSON.parse(last_response.body)
   expect(json_response.count).to eq 3
-  expect(json_response[0]["id"]).to eq 0
-  expect(json_response[1]["id"]).to eq id1.to_i
-  expect(json_response[2]["id"]).to eq id2.to_i
+  expect(json_response[0]['id']).to eq 0
+  expect(json_response[1]['id']).to eq id1.to_i
+  expect(json_response[2]['id']).to eq id2.to_i
 end
 
 Given(/^for that diary entry we have some text components and question answers$/) do
@@ -1232,7 +1213,7 @@ When(/^I add a sensor reading for "(\d+)\ (\w+)\ (\d+) (\d+):(\d+)" with a calib
 end
 
 When(/^I delete the sensor reading with the id "([^"]*)"$/) do |sensor_reading_id|
-  find("#sensor-reading-" + sensor_reading_id + " a").click
+  find('#sensor-reading-' + sensor_reading_id + ' a').click
 end
 
 Then(/^this sensor should have (\d+) new sensor reading$/) do |quantity|
@@ -1260,7 +1241,7 @@ end
 Then(/^the JSON response should be \(no matter in what order\):$/) do |json|
   expected = JSON.parse(json)
   actual = JSON.parse(last_response.body)
-  actual['text_components'] = actual['text_components'].sort {|hash1, hash2| hash1['id'] <=> hash2['id']}
+  actual['text_components'] = actual['text_components'].sort_by { |a| a['id'] }
   expect(actual).to eq(expected)
 end
 
@@ -1312,7 +1293,6 @@ Then(/^I should see in section "([^"]*)":$/) do |section, string|
   end
 end
 
-
 When(/^I fill in these form fields in section "([^"]*)":$/) do |header, table|
   table.raw.each do |row|
     within_text_component_section(header) do
@@ -1348,7 +1328,7 @@ Then(/^(?:I see |now )?the event "([^"]*)"$/) do |state|
 end
 
 Given(/^the event was active three times in the past$/) do
-  create(:event_activation, event: @event, id: 23, started_at: '2017-08-04  16:19:13 UTC', ended_at: '2017-08-04  16:19:15 UTC' )
+  create(:event_activation, event: @event, id: 23, started_at: '2017-08-04  16:19:13 UTC', ended_at: '2017-08-04  16:19:15 UTC')
   create(:event_activation, event: @event, id: 24, started_at: '2017-08-04  16:19:16 UTC', ended_at: '2017-08-04  16:19:17 UTC')
   create(:event_activation, event: @event, id: 25, started_at: '2017-08-04  16:19:18 UTC', ended_at: '2017-08-04  16:19:19 UTC')
 end
@@ -1385,7 +1365,6 @@ When(/^the event is (?:not active|inactive)$/) do
   expect(@event).not_to be_active
 end
 
-
 Then(/^(\d+) event activations are in the database$/) do |count|
   expect(Event::Activation.count).to eq count.to_i
 end
@@ -1398,29 +1377,25 @@ Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |s
   sensor = create(:sensor, id: sensor_id, report: Report.current)
   table.hashes.each do |row|
     create(:sensor_reading, sensor: sensor,
-           id: row['Id'],
-           created_at: row['Created at'],
-           calibrated_value: row['Calibrated value'],
-           uncalibrated_value: row['Uncalibrated value'],
-           release: row['Release']
-          )
+                            id: row['Id'],
+                            created_at: row['Created at'],
+                            calibrated_value: row['Calibrated value'],
+                            uncalibrated_value: row['Uncalibrated value'],
+                            release: row['Release'])
   end
 end
 
 Given(/^we have these sensor readings for sensor "([^"]*)" in our database:$/) do |sensor_name, table|
-sensor = create(:sensor, name: sensor_name, report: Report.current)
-table.hashes.each do |row|
-  create(:sensor_reading, sensor: sensor,
-         id: row['Id'],
-         created_at: row['Created at'],
-         calibrated_value: row['Calibrated value'],
-         uncalibrated_value: row['Uncalibrated value'],
-         release: row['Release']
-        )
+  sensor = create(:sensor, name: sensor_name, report: Report.current)
+  table.hashes.each do |row|
+    create(:sensor_reading, sensor: sensor,
+                            id: row['Id'],
+                            created_at: row['Created at'],
+                            calibrated_value: row['Calibrated value'],
+                            uncalibrated_value: row['Uncalibrated value'],
+                            release: row['Release'])
+  end
 end
-end
-
-
 
 When(/^notice that we OVERRIDE the given sensor id (\d+) here$/) do |arg1|
   # just documentation
@@ -1429,9 +1404,8 @@ end
 Given(/^a humidity sensor with some sensor readings$/) do
   @diary_entry = DiaryEntry.first
   @humidity_sensor = create(:sensor,
-         name: 'Humidity Sensor 1',
-         sensor_type: create(:sensor_type, property: 'humidity', unit: '%')
-        )
+                            name: 'Humidity Sensor 1',
+                            sensor_type: create(:sensor_type, property: 'humidity', unit: '%'))
   create(:sensor_reading,
          created_at: (@diary_entry.moment - 2.weeks),
          sensor: @humidity_sensor,
@@ -1446,10 +1420,10 @@ Given(/^for this diary entry we have an active text component:$/) do |text|
          from: 0,
          to: 100)
   @text_component = create(:text_component,
-         report: Report.current,
-         channels: [Channel.sensorstory],
-         main_part: text,
-         triggers: [trigger])
+                           report: Report.current,
+                           channels: [Channel.sensorstory],
+                           main_part: text,
+                           triggers: [trigger])
 end
 
 Given(/^the sensor live report started on "([^"]*)"$/) do |date|
@@ -1468,9 +1442,9 @@ When(/^I visit "([^"]*)"$/) do |url|
   visit url
 end
 
-When(/^in section Image I choose my file "([^"]*)" for upload$/) do |arg1|
+When(/^in section Image I choose my file "([^"]*)" for upload$/) do |_arg1|
   within_text_component_section('Image') do
-      attach_file("Upload image", Rails.root + "fixtures/cow.jpg")
+    attach_file('Upload image', Rails.root + 'fixtures/cow.jpg')
   end
 end
 
@@ -1480,7 +1454,7 @@ Then(/^the text component image url starts with$/) do |string|
 end
 
 When(/^I submit the form and upload the image$/) do
-  click_on "Update Text component"
+  click_on 'Update Text component'
 end
 
 Given(/^the current date is "([^"]*)"$/) do |date|
@@ -1488,7 +1462,7 @@ Given(/^the current date is "([^"]*)"$/) do |date|
 end
 
 Given(/^I have a text component that is active right now$/) do
-  create(:text_component, report: Report.find(4711), main_part: "I am in!")
+  create(:text_component, report: Report.find(4711), main_part: 'I am in!')
 end
 
 When(/^I follow the URL of the live entry \(id == 0\)$/) do
@@ -1504,13 +1478,13 @@ end
 
 When(/^I edit an existing text component with an image$/) do
   @text_component = create(:text_component)
-  @text_component.image = File.new("fixtures/cow.jpg")
+  @text_component.image = File.new('fixtures/cow.jpg')
   edit_existing_text_component
 end
 
 When(/^in section Image I tick the checkbox to delete the image$/) do
   within_text_component_section('Image') do
-      check 'text_component[delete_image]'
+    check 'text_component[delete_image]'
   end
 end
 
@@ -1520,5 +1494,5 @@ Then(/^the text component image url is empty or shows the standard image missing
 end
 
 When(/^I submit the form and delete the image$/) do
-  click_on "Update Text component"
+  click_on 'Update Text component'
 end

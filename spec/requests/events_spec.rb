@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe "Events", type: :request do
+RSpec.describe 'Events', type: :request do
   let(:event) { create(:event) }
 
   describe 'format: :json' do
@@ -33,7 +35,7 @@ RSpec.describe "Events", type: :request do
           before { event.start }
           it 'renders error message' do
             action
-            expect(JSON.parse(response.body)).to include({'error' => 'Event is already in this state'})
+            expect(JSON.parse(response.body)).to include('error' => 'Event is already in this state')
           end
         end
       end
@@ -48,4 +50,3 @@ RSpec.describe "Events", type: :request do
     end
   end
 end
-

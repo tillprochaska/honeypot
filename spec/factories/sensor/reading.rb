@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :sensor_reading, class: Sensor::Reading do
     calibrated_value 1

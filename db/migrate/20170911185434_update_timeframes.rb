@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateTimeframes < ActiveRecord::Migration[5.0]
   def change
     TextComponent.transaction do

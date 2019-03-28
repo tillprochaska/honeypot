@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'support/shared_examples/database_unique_attribute'
 
@@ -21,16 +23,16 @@ describe Sensor, type: :model do
   end
 
   describe '#device_id' do
-      context 'of two sensors with the same sensor type', issue: 474 do
-        before { create(:sensor_type, id: 11) }
-        it_behaves_like 'database unique attribute', :sensor, sensor_type_id: 11, device_id: 123
-        context 'if #device_id is blank' do
-          before { create(:sensor, sensor_type_id: 11, device_id: '') }
-          subject { build(:sensor, sensor_type_id: 11, device_id: '') }
-          it { is_expected.to be_valid }
-          it { expect{ subject.save!(validate: false) }.not_to raise_error }
-        end
+    context 'of two sensors with the same sensor type', issue: 474 do
+      before { create(:sensor_type, id: 11) }
+      it_behaves_like 'database unique attribute', :sensor, sensor_type_id: 11, device_id: 123
+      context 'if #device_id is blank' do
+        before { create(:sensor, sensor_type_id: 11, device_id: '') }
+        subject { build(:sensor, sensor_type_id: 11, device_id: '') }
+        it { is_expected.to be_valid }
+        it { expect { subject.save!(validate: false) }.not_to raise_error }
       end
+    end
   end
 
   describe '#animal_id' do
@@ -41,7 +43,7 @@ describe Sensor, type: :model do
         before { create(:sensor, sensor_type_id: 11, animal_id: '') }
         subject { build(:sensor, sensor_type_id: 11, animal_id: '') }
         it { is_expected.to be_valid }
-        it { expect{ subject.save!(validate: false) }.not_to raise_error }
+        it { expect { subject.save!(validate: false) }.not_to raise_error }
       end
     end
   end
@@ -59,7 +61,7 @@ describe Sensor, type: :model do
 
     it 'returns last sensor reading at a given point in time' do
       diary_entry = DiaryEntry.new(moment: 3.seconds.ago)
-      expect(sensor.last_reading diary_entry).to eq first
+      expect(sensor.last_reading(diary_entry)).to eq first
     end
   end
 
@@ -73,7 +75,7 @@ describe Sensor, type: :model do
 
   describe '#address' do
     it 'accepts hex numbers and saves as decimal' do
-      sensor = build(:sensor, :address => "0xBC")
+      sensor = build(:sensor, address: '0xBC')
       sensor.save
       expect(sensor).to be_valid
       expect(sensor.address).to eq 188

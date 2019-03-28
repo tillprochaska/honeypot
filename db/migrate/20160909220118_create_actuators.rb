@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateActuators < ActiveRecord::Migration
   def change
     create_table :actuators do |t|

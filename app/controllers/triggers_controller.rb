@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class TriggersController < ApplicationController
-  before_action :set_trigger, only: [:show, :edit, :update, :destroy]
+  before_action :set_trigger, only: %i[show edit update destroy]
 
   def index
     @triggers = Trigger.where(report: @report)
@@ -10,15 +12,13 @@ class TriggersController < ApplicationController
     @trigger.report = Report.current
   end
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def create
     @trigger = Trigger.new(trigger_params)
-		@trigger.conditions.each {|c| c.trigger = @trigger } # both trigger and condition are new and need to be connected
+    @trigger.conditions.each { |c| c.trigger = @trigger } # both trigger and condition are new and need to be connected
 
     respond_to do |format|
       if @trigger.save
@@ -52,6 +52,7 @@ class TriggersController < ApplicationController
   end
 
   private
+
   def set_trigger
     @trigger = Trigger.find(params[:id])
   end
@@ -60,7 +61,7 @@ class TriggersController < ApplicationController
     params.require(:trigger).permit(:heading, :name,
                                     :priority, :report_id,
                                     :validity_period,
-                                    :event_ids => [],
-                                    conditions_attributes: [:id, :sensor_id, :from, :to, :_destroy])
+                                    event_ids: [],
+                                    conditions_attributes: %i[id sensor_id from to _destroy])
   end
 end

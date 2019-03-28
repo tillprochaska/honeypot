@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Sensor < ActiveRecord::Base
   has_many :sensor_readings, class_name: Sensor::Reading, dependent: :destroy
   belongs_to :sensor_type
@@ -16,13 +18,12 @@ class Sensor < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validates :address, uniqueness: true
   validates :sensor_type, presence: true
-  validates :animal_id, uniqueness: { scope: :sensor_type }, :allow_nil => true
-  validates :device_id, uniqueness: { scope: :sensor_type }, :allow_nil => true
-
+  validates :animal_id, uniqueness: { scope: :sensor_type }, allow_nil: true
+  validates :device_id, uniqueness: { scope: :sensor_type }, allow_nil: true
 
   before_validation do
-      self.animal_id = nil if self.animal_id.blank?
-      self.device_id = nil if self.device_id.blank?
+    self.animal_id = nil if animal_id.blank?
+    self.device_id = nil if device_id.blank?
   end
 
   def self.default_scope
@@ -30,7 +31,7 @@ class Sensor < ActiveRecord::Base
   end
 
   def address=(value)
-    if value.respond_to?(:start_with?) && value.start_with?("0x") # probably a hex code string
+    if value.respond_to?(:start_with?) && value.start_with?('0x') # probably a hex code string
       super(value.hex)
     else
       super(value)
@@ -45,7 +46,7 @@ class Sensor < ActiveRecord::Base
 
   def calibrate(sensor_reading)
     value = sensor_reading.uncalibrated_value
-    self.min_value, self.max_value = [self.min_value, self.max_value, value].compact.minmax
-    self.save
+    self.min_value, self.max_value = [min_value, max_value, value].compact.minmax
+    save
   end
 end

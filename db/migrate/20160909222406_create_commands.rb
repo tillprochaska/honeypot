@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateCommands < ActiveRecord::Migration
   def change
     create_table :commands do |t|

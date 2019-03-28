@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class SensorReadingsController < ApplicationController
   include CommonFilters
   before_action :set_sensor
   before_action :authenticate_user!, except: %i[index create debug destroy]
 
   def index
-    from_and_to_params_are_dates(filter_params) or return
+    from_and_to_params_are_dates(filter_params) || return
     @sensor_readings = @sensor.sensor_readings.order(created_at: :desc)
     @sensor_readings = filter_release(@sensor_readings, filter_params)
     @sensor_readings = filter_timestamp(@sensor_readings, filter_params)
@@ -15,7 +17,7 @@ class SensorReadingsController < ApplicationController
     @sensor_reading = Sensor::Reading.new(sensor_reading_params)
     @sensor_reading.sensor = @sensor
     respond_to do |format|
-      if @sensor_reading.sensor && @sensor_reading.sensor.calibrating
+      if @sensor_reading.sensor&.calibrating
         @sensor_reading.sensor.calibrate(@sensor_reading)
         format.json { render json: @sensor_reading, status: :accepted }
       else
@@ -36,6 +38,7 @@ class SensorReadingsController < ApplicationController
       if sample_params[:from].nil? || sample_params[:to].nil?
         raise ActiveRecord::Rollback
       end
+
       quantity = sample_params[:quantity].to_i
       from = sample_params[:from].to_i
       to = sample_params[:to].to_i
@@ -62,7 +65,7 @@ class SensorReadingsController < ApplicationController
   end
 
   def destroy
-    @sensor_reading = Sensor::Reading.find(sensor_reading_delete_params["sensor_reading_id"])
+    @sensor_reading = Sensor::Reading.find(sensor_reading_delete_params['sensor_reading_id'])
     if @sensor_reading.destroy
       respond_to do |format|
         format.js { render 'sensor/readings/destroy' }
@@ -72,16 +75,15 @@ class SensorReadingsController < ApplicationController
   end
 
   private
+
   def set_sensor
     if sensor_params.empty?
       @sensor = Sensor.find(params[:id])
     else
       # Override
       dummy_sensor = Sensor.new(sensor_params[:sensor]) # perform normalization
-      search_params = dummy_sensor.attributes.reject{|k,v| v.nil?}
-      if search_params.present?
-        @sensor = Sensor.find_by(search_params)
-      end
+      search_params = dummy_sensor.attributes.reject { |_k, v| v.nil? }
+      @sensor = Sensor.find_by(search_params) if search_params.present?
     end
   end
 
@@ -100,7 +102,7 @@ class SensorReadingsController < ApplicationController
 
   def sensor_params
     format_particle_api_json
-    sensor_params = params.permit(sensor: [:name, :address])
+    sensor_params = params.permit(sensor: %i[name address])
   end
 
   # Tries to parse "data" (the only way to send attributes via partical API)

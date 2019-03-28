@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :text_component do
-    heading "MyString"
-    introduction "MyText"
-    main_part "MyText"
-    closing "MyText"
+    heading 'MyString'
+    introduction 'MyText'
+    main_part 'MyText'
+    closing 'MyText'
     from_day nil
-    to_day  nil
+    to_day nil
 
     association :report
 

@@ -1,5 +1,6 @@
-class EventDecorator
+# frozen_string_literal: true
 
+class EventDecorator
   def initialize(event)
     @event = event
   end
@@ -9,10 +10,9 @@ class EventDecorator
     if date
       date.strftime(Report::DATE_FORMAT)
     else
-      "(Sorry, leider habe ich gerade keine Daten für dich!)"
+      '(Sorry, leider habe ich gerade keine Daten für dich!)'
     end
   end
-
 
   def method_missing(m, *args, &block)
     @event.send(m, *args, &block)

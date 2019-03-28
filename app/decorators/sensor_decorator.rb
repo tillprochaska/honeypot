@@ -1,5 +1,6 @@
-class SensorDecorator
+# frozen_string_literal: true
 
+class SensorDecorator
   def initialize(sensor, diary_entry)
     @diary_entry = diary_entry
     @sensor = sensor
@@ -11,9 +12,9 @@ class SensorDecorator
 
     if r
       v = r.calibrated_value
-      "%<value>.#{r.sensor.fractionDigits}f %<unit>s" % {value: v, unit: u}
+      format("%<value>.#{r.sensor.fractionDigits}f %<unit>s", value: v, unit: u)
     else
-      "(Sorry, leider habe ich gerade keine Daten für dich!)"
+      '(Sorry, leider habe ich gerade keine Daten für dich!)'
     end
   end
 

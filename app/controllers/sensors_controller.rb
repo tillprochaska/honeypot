@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class SensorsController < ApplicationController
-  before_action :set_sensor, only: [:show, :edit, :update, :destroy, :start_calibration, :stop_calibration]
-  before_action :set_readings, only: [:show, :start_calibration, :stop_calibration]
+  before_action :set_sensor, only: %i[show edit update destroy start_calibration stop_calibration]
+  before_action :set_readings, only: %i[show start_calibration stop_calibration]
 
   def index
     @sensors = Sensor.where(report: @report).includes(:sensor_type).reorder('sensor_types.data_collection_method desc')
@@ -49,6 +51,7 @@ class SensorsController < ApplicationController
   end
 
   private
+
   def set_sensor
     @sensor = Sensor.find(params[:id])
   end

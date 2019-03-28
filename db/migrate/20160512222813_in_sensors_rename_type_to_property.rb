@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InSensorsRenameTypeToProperty < ActiveRecord::Migration
   def change
     change_table :sensors do |t|

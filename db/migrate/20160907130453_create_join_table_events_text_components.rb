@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateJoinTableEventsTextComponents < ActiveRecord::Migration
   def change
     create_table :events_text_components, id: false do |t|
