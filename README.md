@@ -12,7 +12,7 @@ Make sure you have ruby version 2.3.4 installed on your system.
 
 2. Install dependencies
     ```
-    cd story.board
+    cd honeypot
     bundle install
     ```
 
@@ -68,8 +68,3 @@ We are [cucumber evangelists](https://cucumber.io/). See our executable, up-to-d
 4. Run the tests: `bin/rake`
 5. Push to the branch: `git push origin my-new-feature`
 6. Submit a pull request :heart:
-
-
-
-
-
