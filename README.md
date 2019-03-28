@@ -7,7 +7,7 @@ Make sure you have ruby version 2.3.4 installed on your system.
 
 1. Clone the repository:
     ```
-    git clone https://github.com/roschaefer/story.board.git
+    git clone https://github.com/tillprochaska/honeypot
     ```
 
 2. Install dependencies

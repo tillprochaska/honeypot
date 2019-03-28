@@ -5,7 +5,7 @@ require 'capistrano-db-tasks'
 lock '3.11.0'
 
 set :application, 'story.board'
-set :repo_url, 'https://github.com/roschaefer/story.board.git'
+set :repo_url, 'https://github.com/tillprochaska/honeypot'
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
@@ -64,8 +64,8 @@ namespace :deploy do
   desc 'Restart Daemon'
   task :restart_daemon do
     on roles(:web)  do |host|
-      execute :svc, '-du ~/service/story.board'
-      info "Host #{host} restarting svc daemon"
+      execute :supervisorctl, 'restart storyboard'
+      info "Host #{host} restarting storyboard daemon"
     end
   end
 
