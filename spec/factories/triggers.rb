@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :trigger do
-    name "It's a name"
+    name { "It's a name" }
     association :report
 
     trait :active do

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'chains/index', type: :view do
-  before(:each) do
+  before do
     assign(:chains, [
              Chain.create!(
                actuator: nil,

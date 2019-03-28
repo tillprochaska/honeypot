@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'diary_entries/show', type: :view do
-  before(:each) do
+  before do
     report = create(:report, name: 'I am a super cool report')
     assign(:report, report)
     @diary_entry = assign(:diary_entry, create(:diary_entry, release: :final, report: report))

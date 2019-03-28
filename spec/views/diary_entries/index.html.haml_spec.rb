@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'diary_entries/index', type: :view do
-  before(:each) do
+  before do
     report = create(:report, name: 'I am a super cool report')
     assign(:report, report)
     assign(:diary_entries, create_list(:diary_entry, 2, report: report, release: :debug))

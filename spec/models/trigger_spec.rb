@@ -24,13 +24,13 @@ describe Trigger, type: :model do
 
         it 'is no longer relevant' do
           Timecop.travel(4.hours.from_now) do
-            expect(trigger.active?(future_diary_entry)).to be_falsy
+            expect(trigger).not_to be_active(future_diary_entry)
           end
         end
 
         it 'is still active for past diary entries' do
           Timecop.travel(4.hours.from_now) do
-            expect(trigger.active?(diary_entry)).to be_truthy
+            expect(trigger).to be_active(diary_entry)
           end
         end
       end
@@ -48,16 +48,21 @@ describe Trigger, type: :model do
     end
 
     context 'missing' do
-      let(:trigger) { build(:trigger, priority: nil) }
       subject { trigger }
+
+      let(:trigger) { build(:trigger, priority: nil) }
+
       it { is_expected.not_to be_valid }
     end
   end
 
   describe '#events' do
     subject { trigger.events }
+
     let(:event) { create(:event, triggers: [trigger]) }
+
     before { event }
+
     it 'condition connects a trigger and a sensor' do
       is_expected.to include(event)
     end
@@ -65,7 +70,9 @@ describe Trigger, type: :model do
 
   describe '#sensors' do
     subject { trigger.sensors }
+
     before { create(:condition, trigger: trigger, sensor: sensor) }
+
     it 'condition connects a trigger and a sensor' do
       is_expected.to include(sensor)
     end
@@ -77,32 +84,38 @@ describe Trigger, type: :model do
         create_list(:condition, 3, trigger: trigger)
         create(:condition)
       end
+
       before { conditions }
 
       it 'get destroyed' do
-        expect { trigger.destroy }.to change { Condition.count }.from(4).to(1)
+        expect { trigger.destroy }.to change(Condition, :count).from(4).to(1)
       end
     end
   end
 
   describe '#active?' do
-    let(:diary_entry) { DiaryEntry.new }
     subject { trigger.active?(diary_entry) }
+
+    let(:diary_entry) { DiaryEntry.new }
+
     context 'without any conditions is considered active' do
       it { is_expected.to be_truthy }
     end
 
     context 'with connected sensor' do
       let(:condition) { create :condition, sensor: sensor, trigger: trigger, from: 1, to: 3 }
+
       before { condition }
 
       context 'and last calibrated value in range' do
         before { create :sensor_reading, sensor: sensor, calibrated_value: 2 }
+
         it { is_expected.to be_truthy }
       end
 
       context 'and last calibrated value outside range' do
         before { create :sensor_reading, sensor: sensor, calibrated_value: 0 }
+
         it { is_expected.to be_falsy }
       end
 
@@ -120,11 +133,13 @@ describe Trigger, type: :model do
 
             describe 'extends to infinity' do
               before { create :sensor_reading, sensor: sensor, calibrated_value: hash[:value_in] }
+
               it { is_expected.to be_truthy }
             end
 
             describe 'opposite boundary still required' do
               before { create :sensor_reading, sensor: sensor, calibrated_value: hash[:value_out] }
+
               it { is_expected.to be_falsy }
             end
           end
@@ -139,10 +154,13 @@ describe Trigger, type: :model do
 
         describe '#active? :final' do
           subject { trigger.active? DiaryEntry.new(release: :final) }
+
           it { is_expected.to be_falsy }
         end
+
         describe '#active? :debug' do
           subject { trigger.active? DiaryEntry.new(release: :debug) }
+
           it { is_expected.to be_truthy }
         end
       end
@@ -150,15 +168,20 @@ describe Trigger, type: :model do
 
     context 'given a diary entry' do
       let(:diary_entry) { create(:diary_entry) }
+
       context 'given events' do
         before { trigger.events << event }
+
         context 'event active now' do
           let(:event) { create(:event) }
+
           before { event.start }
+
           it { is_expected.to be_truthy }
 
           context 'but diary entry is at a time when the event was not yet active' do
             let(:diary_entry) { create(:diary_entry, moment: 1.week.ago) }
+
             it { is_expected.to be_falsy }
           end
         end

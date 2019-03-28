@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :channel do
-    name 'JustAnotherChannel'
+    name { 'JustAnotherChannel' }
   end
 end

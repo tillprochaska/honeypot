@@ -4,11 +4,12 @@ require 'rails_helper'
 require 'support/shared_examples/report_namespaced_controller'
 
 RSpec.describe 'TextComponents', type: :request do
+  let(:report) { create(:report, id: 4711) }
+  let(:user) { create(:user) }
+
   it_behaves_like 'a report/ namespaced controller', TextComponent
 
-  let(:user) { create(:user) }
   before { sign_in user }
-  let(:report) { create(:report, id: 4711) }
 
   describe 'GET /text_components' do
     it 'works! (now write some real specs)' do
@@ -30,6 +31,7 @@ RSpec.describe 'TextComponents', type: :request do
 
     describe '#timeframe' do
       before { tc }
+
       it 'updates #from_hour' do
         expect do
           patch "/reports/#{tc.report.id}/text_components/#{tc.id}", params: { text_component: { timeframe: '[6, 23]' } }

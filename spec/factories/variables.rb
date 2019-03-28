@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :variable do
-    key 'MyString'
-    value 'MyString'
-    report nil
+    key { 'MyString' }
+    value { 'MyString' }
+    report { nil }
   end
 end

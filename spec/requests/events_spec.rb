@@ -10,7 +10,9 @@ RSpec.describe 'Events', type: :request do
       describe 'when signed in' do
         let(:user) { create(:user) }
         before { sign_in user }
+
         let(:action) { get event_path(event), params: { format: :json } }
+
         it 'contains activations' do
           create(:event_activation, event: event, id: 4711)
           action
@@ -22,17 +24,19 @@ RSpec.describe 'Events', type: :request do
 
     describe 'when signed in' do
       let(:user) { create(:user) }
+
       before { sign_in user }
 
       describe 'POST /events/:id/start' do
         let(:action) { post start_event_path(event), params: { format: :json } }
 
         it 'starts the event' do
-          expect { action }.to(change { event.active? }.from(false).to(true))
+          expect { action }.to(change(event, :active?).from(false).to(true))
         end
 
         describe 'when started already' do
           before { event.start }
+
           it 'renders error message' do
             action
             expect(JSON.parse(response.body)).to include('error' => 'Event is already in this state')
@@ -42,9 +46,11 @@ RSpec.describe 'Events', type: :request do
 
       describe 'POST /events/:id/stop' do
         before { event.start }
+
         let(:action) { post stop_event_path(event), params: { format: :json } }
+
         it 'stops the event' do
-          expect { action }.to(change { event.active? }.from(true).to(false))
+          expect { action }.to(change(event, :active?).from(true).to(false))
         end
       end
     end

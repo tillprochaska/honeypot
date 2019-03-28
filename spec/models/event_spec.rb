@@ -26,7 +26,7 @@ RSpec.describe Event, type: :model do
     it 'true if the last event activation is not yet finished' do
       expect do
         create(:event_activation, event: event, started_at: Time.now, ended_at: nil)
-      end.to change { event.active? }.from(false).to(true)
+      end.to change(event, :active?).from(false).to(true)
     end
   end
 
@@ -36,7 +36,9 @@ RSpec.describe Event, type: :model do
 
     context 'given a timestamp' do
       let(:timestamp) { 20.minutes.from_now }
+
       before { event.start(timestamp) }
+
       it 'creates an event activation starting at timestamp' do
         expect((Event::Activation.last.started_at - timestamp).abs).to be < 0.000001 # weird, why is it not == timestamp??
       end
@@ -44,6 +46,7 @@ RSpec.describe Event, type: :model do
 
     context 'not ended, yet' do
       before { create(:event_activation, event: event, started_at: 10.minutes.ago, ended_at: nil) }
+
       specify { expect { event.start }.not_to(change { Event::Activation.count }) }
       specify { expect(event.start).to be_falsy }
     end
@@ -61,6 +64,7 @@ RSpec.describe Event, type: :model do
 
     context 'not even started, yet' do
       before { create(:event_activation, event: event, started_at: 10.minutes.ago, ended_at: 5.minutes.ago) }
+
       specify { expect { event.stop }.not_to(change { Event::Activation.last.ended_at }) }
       specify { expect(event.stop).to be_falsy }
     end
@@ -76,7 +80,9 @@ RSpec.describe Event, type: :model do
 
       context 'given a timestamp' do
         let(:timestamp) { 20.minutes.from_now }
+
         before { event.stop(timestamp) }
+
         it 'set last event activation to timestamp' do
           expect((Event::Activation.last.ended_at - timestamp).abs).to be < 0.000001 # weird, why is it not == timestamp??
         end
@@ -84,6 +90,7 @@ RSpec.describe Event, type: :model do
 
       context 'activations of other events' do
         let(:other_activation) { create(:event_activation, started_at: 30.minutes.ago, ended_at: 20.minutes.ago) }
+
         it 'do not change' do
           other_activation
           expect { event.stop }.not_to(change { other_activation.reload.ended_at })

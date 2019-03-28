@@ -6,6 +6,7 @@ describe 'Whenever Schedule' do
   before do
     load 'Rakefile'
   end
+
   it 'makes sure `rake` statements exist' do
     # config/schedule.rb file is used by default in constructor:
     schedule = Whenever::Test::Schedule.new

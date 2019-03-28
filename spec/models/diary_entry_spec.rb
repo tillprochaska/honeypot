@@ -4,9 +4,12 @@ require 'rails_helper'
 
 RSpec.describe DiaryEntry, type: :model do
   let(:report) { Report.current }
+
   describe '::after_initialize' do
-    let(:diary_entry) { DiaryEntry.new }
     subject { diary_entry }
+
+    let(:diary_entry) { DiaryEntry.new }
+
     it 'initializes #moment with the current timestamp' do
       expect(subject.moment).to be_a Time
     end
@@ -20,8 +23,10 @@ RSpec.describe DiaryEntry, type: :model do
 
   describe '#text_components' do
     subject { diary_entry.text_components }
+
     let(:diary_entry) { DiaryEntry.new(report: report) }
     let(:text_components) { create_list(:text_component, 3, report: report) }
+
     it 'returns the active text components of the report' do
       text_components
       expect(subject.count).to eq 3
@@ -31,21 +36,25 @@ RSpec.describe DiaryEntry, type: :model do
   describe '#live?' do
     context 'saved' do
       subject { create(:diary_entry) }
+
       it { is_expected.not_to be_live }
     end
 
     context 'not saved' do
       subject { build(:diary_entry) }
+
       it { is_expected.to be_live }
     end
   end
 
   describe '#archive!' do
+    subject { diary_entry.archive! }
+
     let(:release) { :final }
     let(:diary_entry) { described_class.new(report: report, release: release) }
-    subject { diary_entry.archive! }
+
     it 'stores a new diary entry' do
-      expect { subject } .to change { DiaryEntry.count }.from(0).to(1)
+      expect { subject } .to change(DiaryEntry, :count).from(0).to(1)
     end
 
     it 'adds a new diary entry to the report' do
@@ -54,6 +63,7 @@ RSpec.describe DiaryEntry, type: :model do
 
     context 'for :debug data' do
       let(:release) { :debug }
+
       it 'stores the release along with the diary entry' do
         subject
         expect(report.diary_entries.first.release).to eq 'debug'
@@ -75,6 +85,7 @@ RSpec.describe DiaryEntry, type: :model do
 
       context 'but for another release' do
         let(:release) { :debug }
+
         it 'can exceed' do
           expect { subject }.to change { report.diary_entries.size }
         end

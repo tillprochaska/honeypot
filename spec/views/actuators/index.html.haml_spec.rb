@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'actuators/index', type: :view do
-  before(:each) do
+  before do
     assign(:actuators, [
              Actuator.create!(
                port: 1,

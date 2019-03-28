@@ -9,10 +9,12 @@ RSpec.describe Actuator, type: :model do
   end
 
   describe '#activate!' do
-    let(:actuator) { create(:actuator) }
     subject { actuator.activate! }
+
+    let(:actuator) { create(:actuator) }
+
     it 'creates a command' do
-      expect { subject }.to change { Command.count }.from(0).to(1)
+      expect { subject }.to change(Command, :count).from(0).to(1)
     end
 
     it 'created command belongs to actuator' do

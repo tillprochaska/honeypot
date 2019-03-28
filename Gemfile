@@ -73,6 +73,7 @@ group :development do
   gem 'highline'
   gem 'rails-erd'
   gem 'rubocop', require: false
+  gem 'rubocop-rspec'
   gem 'seed_dump'
 end
 

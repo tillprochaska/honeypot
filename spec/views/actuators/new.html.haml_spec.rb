@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'actuators/new', type: :view do
-  before(:each) do
+  before do
     assign(:actuator, Actuator.new(
                         name: 'MyString',
                         port: 1
