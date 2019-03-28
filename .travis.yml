@@ -4,7 +4,7 @@ rvm:
 services:
   - postgresql
 addons:
-  ssh_known_hosts: perseus.uberspace.de
+  ssh_known_hosts: mrkos.uberspace.de
   chrome: stable
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres

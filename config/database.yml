@@ -22,7 +22,7 @@ test: &test
 
 production:
   <<: *default
-  host: /home/vicari/tmp
+  host: /home/bienenle/tmp
   database: story_board_production
   username: <%= ENV["POSTGRES_USERNAME"] %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>

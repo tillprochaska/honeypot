@@ -10,7 +10,7 @@ set :repo_url, 'https://github.com/roschaefer/story.board.git'
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, '/home/vicari/story.board'
+set :deploy_to, '/home/bienenle/story.board'
 set :db_dump_dir, -> { File.join(current_path, 'db', 'backups') }
 set :disallow_pushing, true
 set :db_local_clean, false
