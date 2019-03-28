@@ -170,14 +170,14 @@ ActiveRecord::Schema.define(version: 20170912133422) do
     t.integer  "to_day"
     t.integer  "report_id"
     t.integer  "topic_id"
-    t.integer  "assignee_id"
     t.integer  "publication_status", default: 0
+    t.integer  "assignee_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "notes"
     t.string   "image_file_name"
     t.string   "image_content_type"
-    t.integer  "image_file_size"
+    t.bigint   "image_file_size"
     t.datetime "image_updated_at"
     t.text     "image_alt"
     t.integer  "from_hour"
@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(version: 20170912133422) do
     t.datetime "updated_at",                  null: false
     t.integer  "report_id"
     t.integer  "priority",        default: 1
-    t.integer  "validity_period"
+    t.float    "validity_period"
     t.index ["report_id"], name: "index_triggers_on_report_id", using: :btree
   end
 
