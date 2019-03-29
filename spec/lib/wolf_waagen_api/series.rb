@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe WolfWaagenApi::Result do
+RSpec.describe WolfWaagenApi::Series do
 
   before(:each) do
     @valid_req = WolfWaagenApi::Request.new(
@@ -43,7 +43,7 @@ RSpec.describe WolfWaagenApi::Result do
       }.to raise_error ArgumentError
     end
 
-    it 'allows unitless series' do
+    it 'should allow unitless series' do
       data = @valid_data.clone
       data[:unit] = nil
 
@@ -52,13 +52,13 @@ RSpec.describe WolfWaagenApi::Result do
       }.not_to raise_error
     end
 
-    it 'validates accuracy' do
+    it 'should allow series without accuracy' do
       data = @valid_data.clone
       data[:accuracy] = nil
 
       expect {
         WolfWaagenApi::Series.new(result: @valid_res, data: data)
-      }.to raise_error ArgumentError
+      }.not_to raise_error
     end
 
     it 'makes sure a list of float or integer values is passed' do
@@ -67,7 +67,7 @@ RSpec.describe WolfWaagenApi::Result do
 
       expect {
         WolfWaagenApi::Series.new(result: @valid_res, data: data)
-      }.to raise_error ArgumentError
+      }.to raise_error
     end
 
     it 'handles a list of float or integer values' do

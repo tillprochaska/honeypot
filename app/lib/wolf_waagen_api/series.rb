@@ -18,11 +18,6 @@ module WolfWaagenApi
 
       @id = data[:id]
       @unit = data[:unit]
-
-      if not data[:accuracy]
-        raise ArgumentError.new('`data` should have an `accuracy` property.')
-      end
-
       @accuracy = data[:accuracy]
 
       if not data[:values].is_a?(Array)
