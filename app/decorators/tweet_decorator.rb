@@ -28,8 +28,10 @@ class TweetDecorator
 
   def tweet_content
     call_to_action = "#{HASHTAG} - mehr erfahren: #{self.read_more_link}"
-    remaining_characters = 280 - call_to_action.length
-    "#{@diary_entry.main_part.slice(0, remaining_characters)} #{call_to_action}"
+    remaining_characters = 280 - call_to_action.length - 1 # 1 whitespace
+    text = ActionController::Base.helpers.strip_tags(@diary_entry.main_part).gsub(/\s+/, " ")
+    text = ActionController::Base.helpers.truncate(text, length: remaining_characters, separator: ' ')
+    "#{text} #{call_to_action}"
   end
 
   def method_missing(m, *args, &block)

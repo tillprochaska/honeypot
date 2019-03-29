@@ -28,10 +28,19 @@ RSpec.describe TweetDecorator do
       before { report.text_components << components }
 
       it { is_expected.to include("Must be included in the tweet") }
+      it { is_expected.not_to include("<p>") }
 
-      describe 'length' do
-        subject { decorator.tweet_content.length }
-        it { is_expected.to be <= 280 }
+      context 'excessively long texts' do
+        let(:main_part) { 'bla bla bla ' * 300 }
+
+        describe 'length' do
+          subject { decorator.tweet_content.length }
+          it { is_expected.to be <= 280 }
+        end
+
+        it "writes ellipsis for excessive long texts" do
+          is_expected.to include('bla bla...')
+        end
       end
     end
   end
