@@ -59,8 +59,8 @@ class SensorsController < ApplicationController
   def set_readings
     @final_readings = @sensor.sensor_readings.final.order(:created_at).last(50).reverse
     @debug_readings = @sensor.sensor_readings.debug.order(:created_at).last(50).reverse
-    @final_readings = @final_readings.group_by{|r| r.created_at.to_date }
-    @debug_readings = @debug_readings.group_by{|r| r.created_at.to_date }
+    @final_readings = @final_readings.group_by { |r| r.created_at.to_date }
+    @debug_readings = @debug_readings.group_by { |r| r.created_at.to_date }
   end
 
   def sensor_params

@@ -1378,8 +1378,8 @@ Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |s
   sensor = create(:sensor, id: sensor_id, report: Report.current)
   @sensor = sensor
   table.hashes.each do |row|
-		annotation = row['Annotation']
-		annotation = nil if annotation.blank?
+    annotation = row['Annotation']
+    annotation = nil if annotation.blank?
     create(:sensor_reading, sensor: sensor,
                             id: row['Id'],
                             created_at: row['Created at'],
@@ -1502,15 +1502,15 @@ When(/^I submit the form and delete the image$/) do
   click_on 'Update Text component'
 end
 
-Then("the annotation was successfully saved to the database and I can see it on the page") do
+Then('the annotation was successfully saved to the database and I can see it on the page') do
   expect(page).to have_text('Sensor reading was successfully updated.')
   expect(page.find('input[value="Sudden increase"]')).to be_present
   expect(Sensor::Reading.find_by(annotation: 'Sudden increase'))
 end
 
-When("annotate sensor reading {int} with {string}") do |int, annotation|
+When('annotate sensor reading {int} with {string}') do |int, annotation|
   within("#sensor-reading-#{int}") do
     fill_in 'sensor_reading_annotation', with: annotation
-    click_on "Annotate"
+    click_on 'Annotate'
   end
 end

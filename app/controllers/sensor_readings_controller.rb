@@ -23,7 +23,7 @@ class SensorReadingsController < ApplicationController
         format.json { render :show, status: :accepted, location: report_sensor_reading_url(@report, @sensor_reading) }
       else
         format.html do
-          flash[:error]= 'Sensor reading could not updated!'
+          flash[:error] = 'Sensor reading could not updated!'
           redirect_to report_sensor_path(report, sensor)
         end
         format.json { render json: @sensor_reading.errors, status: :unprocessable_entity }
