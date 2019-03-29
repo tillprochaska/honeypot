@@ -52,11 +52,11 @@ Feature: Generate sensor data as JSON for frontend
     Then the JSON response should be:
     """
     [
-    {"id": 24527, "created_at": "2017-07-18T12:19:00.000+02:00", "calibrated_value": 39.008, "uncalibrated_value": 39.008, "release": "final" },
-    {"id": 24521, "created_at": "2017-07-18T12:09:00.000+02:00", "calibrated_value": 39.068, "uncalibrated_value": 39.068, "release": "final" },
-    {"id": 24516, "created_at": "2017-07-18T11:59:00.000+02:00", "calibrated_value": 39.188, "uncalibrated_value": 39.188, "release": "debug" },
-    {"id": 24497, "created_at": "2017-07-18T11:09:00.000+02:00", "calibrated_value": 39.038, "uncalibrated_value": 39.038, "release": "final" },
-    {"id": 24588, "created_at": "2017-07-17T14:59:00.000+02:00", "calibrated_value": 39.55 , "uncalibrated_value": 39.55 , "release": "final" },
-    {"id": 24587, "created_at": "2017-07-17T14:49:00.000+02:00", "calibrated_value": 39.429, "uncalibrated_value": 39.429, "release": "final" }
+    {"id": 24527, "created_at": "2017-07-18T12:19:00.000+02:00", "calibrated_value": 39.008, "uncalibrated_value": 39.008, "annotation": null, "release": "final" },
+    {"id": 24521, "created_at": "2017-07-18T12:09:00.000+02:00", "calibrated_value": 39.068, "uncalibrated_value": 39.068, "annotation": null, "release": "final" },
+    {"id": 24516, "created_at": "2017-07-18T11:59:00.000+02:00", "calibrated_value": 39.188, "uncalibrated_value": 39.188, "annotation": null, "release": "debug" },
+    {"id": 24497, "created_at": "2017-07-18T11:09:00.000+02:00", "calibrated_value": 39.038, "uncalibrated_value": 39.038, "annotation": null, "release": "final" },
+    {"id": 24588, "created_at": "2017-07-17T14:59:00.000+02:00", "calibrated_value": 39.55 , "uncalibrated_value": 39.55 , "annotation": null, "release": "final" },
+    {"id": 24587, "created_at": "2017-07-17T14:49:00.000+02:00", "calibrated_value": 39.429, "uncalibrated_value": 39.429, "annotation": null, "release": "final" }
     ]
     """

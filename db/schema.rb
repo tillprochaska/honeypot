@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170912133422) do
+ActiveRecord::Schema.define(version: 20190328193527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -126,6 +126,7 @@ ActiveRecord::Schema.define(version: 20170912133422) do
     t.integer  "sensor_id"
     t.integer  "release",            default: 0
     t.bigint   "smaxtec_timestamp"
+    t.string   "annotation"
     t.index ["sensor_id"], name: "index_sensor_readings_on_sensor_id", using: :btree
   end
 

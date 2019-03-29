@@ -21,24 +21,27 @@
 
 %p
   %h3 Sensor Readings
-  %table#sensor-readings-table-final.table.table-striped.table-hover
+  %table#sensor-readings-table-final.table.item-table
     %tr
-      %th Id
       %th Timestamp
-      %th Calibrated Value
-      %th Uncalibrated Value
+      %th Calibrated
+      %th Uncalibrated
+      %th Annotation
       %th Delete
-      = render @final_readings
+      - @final_readings.each do |date, readings|
+        = render 'sensor_readings_group', readings: readings, date: date
   %p
     = render "add_sensor_reading"
   %h3 debug Data
-  %table#sensor-readings-table-debug.table.table-striped.table-hover
+  %table#sensor-readings-table-debug.table.item-table
     %tr
-      %th Id
       %th Timestamp
-      %th Calibrated Value
-      %th Uncalibrated Value
-      = render @debug_readings
+      %th Calibrated
+      %th Uncalibrated
+      %th Annotation
+      %th Delete
+      - @debug_readings.each do |date, readings|
+        = render 'sensor_readings_group', readings: readings, date: date
 %p
   = render "generate_debug_sample_data"
 %p
