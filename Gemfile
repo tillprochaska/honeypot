@@ -39,6 +39,7 @@ gem 'devise'
 gem 'haml-rails'
 gem 'rack-cors', require: 'rack/cors'
 gem 'simple_form'
+gem 'twitter'
 gem 'whenever', require: false
 
 # Image upload to Amazon S3 Storage Cloud
