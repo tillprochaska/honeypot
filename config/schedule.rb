@@ -9,8 +9,10 @@
 #
 set :output, './log/cron.log'
 
-every 15.minutes do
-  rake 'smaxtec_api:update_sensors'
+%w[00:05am 6:05am 9:05am 1:05pm 6:05pm].each do |time|
+  every :day, at: time do
+    rake 'twitter:tweet'
+  end
 end
 
 every 1.minutes do
