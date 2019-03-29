@@ -1386,7 +1386,7 @@ Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |s
                             calibrated_value: row['Calibrated value'],
                             uncalibrated_value: row['Uncalibrated value'],
                             annotation: annotation,
-                            release: row['Release'] || 'final')
+                            release: row['Release'])
   end
 end
 
@@ -1502,16 +1502,15 @@ When(/^I submit the form and delete the image$/) do
   click_on 'Update Text component'
 end
 
-When("in the row with sensor reading {int} I click on {string}") do |int, button|
-  within("#sensor-reading-#{int}") do
-    click button
-  end
-end
-
-When("I annotate {string} and click the submit button") do |string|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
 Then("the annotation was successfully saved to the database and I can see it on the page") do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(page).to have_text('Sensor reading was successfully updated.')
+  expect(page.find('input[value="Sudden increase"]')).to be_present
+  expect(Sensor::Reading.find_by(annotation: 'Sudden increase'))
+end
+
+When("annotate sensor reading {int} with {string}") do |int, annotation|
+  within("#sensor-reading-#{int}") do
+    fill_in 'sensor_reading_annotation', with: annotation
+    click_on "Annotate"
+  end
 end
