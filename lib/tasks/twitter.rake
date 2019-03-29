@@ -6,6 +6,7 @@ namespace :twitter do
     Report.find_each do |report|
       diary_entry = report.diary_entries.final.last
       next unless diary_entry
+
       t = TweetDecorator.new(diary_entry)
       t.tweet!
     end

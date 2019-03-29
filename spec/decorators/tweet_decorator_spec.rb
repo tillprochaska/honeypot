@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe TweetDecorator do
   let(:decorator) { described_class.new(diary_entry) }
-  let(:report) { create(:report, frontend_base_url: 'bienenkoenigin' ) }
+  let(:report) { create(:report, frontend_base_url: 'bienenkoenigin') }
   let(:diary_entry) { create(:diary_entry, id: 4711, report: report) }
 
   describe '#tweet_content' do
@@ -16,10 +16,11 @@ RSpec.describe TweetDecorator do
 
     context 'report frontend_base_url blank' do
       let(:report) { build(:report, frontend_base_url: '   ') }
+
       before { report.save(validate: false) }
+
       it { is_expected.to end_with('https://bienenlive.wdr.de') }
     end
-
 
     context 'with a text component' do
       let(:main_part) { 'Must be included in the tweet' }
@@ -27,24 +28,26 @@ RSpec.describe TweetDecorator do
 
       before { report.text_components << components }
 
-      it { is_expected.to include("Must be included in the tweet") }
-      it { is_expected.not_to include("<p>") }
+      it { is_expected.to include('Must be included in the tweet') }
+      it { is_expected.not_to include('<p>') }
 
       context 'excessively long texts' do
         let(:main_part) { 'bla bla bla ' * 300 }
 
         describe 'length' do
           subject { decorator.tweet_content.length }
+
           it { is_expected.to be <= 280 }
         end
 
-        it "writes ellipsis for excessive long texts" do
+        it 'writes ellipsis for excessive long texts' do
           is_expected.to include('bla bla ...')
         end
 
-        describe "containing sentences" do
+        describe 'containing sentences' do
           let(:main_part) { 'bla bla bla end.' * 300 }
-          it "cuts at sentences" do
+
+          it 'cuts at sentences' do
             is_expected.to include('bla bla end...')
           end
         end
