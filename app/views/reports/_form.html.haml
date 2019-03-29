@@ -2,6 +2,7 @@
   = r.input :name
   = r.input :start_date
   = r.input :duration
+  = r.input :hive_id, label: "Hive ID for use with the Wolf Waagen API"
   = r.input :video, label: "Video URL"
   - unless @report.variables.empty?
     %h3 Custom variables

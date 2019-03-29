@@ -11,6 +11,8 @@ class Report < ActiveRecord::Base
   has_many :variables, dependent: :destroy
   accepts_nested_attributes_for :variables
 
+  validates :hive_id, presence: true
+
   def self.current
     Report.first
   end
