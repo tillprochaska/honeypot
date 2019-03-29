@@ -306,7 +306,8 @@ Then(/^I see only (\d+) sensor readings$/) do |times|
 end
 
 Then(/^the first row is the most recent sensor reading$/) do
-  id = page.first('td').text
+  id = page.first('.sensor-reading-row')[:id]
+  id = id.sub('sensor-reading-', '')
   first_row = Sensor::Reading.find(id)
   most_recent = Sensor::Reading.order(:created_at).last
   expect(first_row.id).to eq most_recent.id
