@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe TweetDecorator do
   let(:decorator) { described_class.new(diary_entry) }
-  let(:report) { create(:report, frontend_base_url: 'bienenkoenigin') }
+  let(:report) { create(:report, frontend_base_url: 'https://bienenlive.wdr.de/bienenkoenigin/mein-tagebuch') }
   let(:diary_entry) { create(:diary_entry, id: 4711, report: report) }
 
   describe '#tweet_content' do
@@ -29,7 +29,9 @@ RSpec.describe TweetDecorator do
       before { report.text_components << components }
 
       it { is_expected.to include('Must be included in the tweet') }
-      it { is_expected.not_to include('<p>') }
+      it 'removes markup' do
+        is_expected.not_to include('<p>')
+      end
 
       context 'excessively long texts' do
         let(:main_part) { 'bla bla bla ' * 300 }
@@ -41,14 +43,14 @@ RSpec.describe TweetDecorator do
         end
 
         it 'writes ellipsis for excessive long texts' do
-          is_expected.to include('bla bla ...')
+          is_expected.to include('bla bla ')
         end
 
         describe 'containing sentences' do
           let(:main_part) { 'bla bla bla end.' * 300 }
 
           it 'cuts at sentences' do
-            is_expected.to include('bla bla end...')
+            is_expected.to include('bla bla end')
           end
         end
       end
