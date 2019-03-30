@@ -40,6 +40,7 @@ module WolfWaagenApi
     }].freeze
 
     def initialize(report:)
+      raise ArgumentError, '`report` should be an instance of `Report`' unless report.is_a? Report
       raise ArgumentError, '`report` should have an `hive_id` attribute.' unless report.hive_id
 
       @report = report
@@ -54,7 +55,7 @@ module WolfWaagenApi
 
       result = request.send
       result.series.each do |series|
-        save_series_points(series)
+        save_series_points(series: series)
       end
     end
 
@@ -95,7 +96,7 @@ module WolfWaagenApi
       date.to_datetime
     end
 
-    def save_series_points(series)
+    def save_series_points(series:)
       sensors = api_sensors_by_series_id(series_id: series.id)
 
       sensors.each do |sensor|
