@@ -42,15 +42,17 @@ RSpec.describe TweetDecorator do
           it { is_expected.to be <= 280 }
         end
 
-        it 'writes ellipsis for excessive long texts' do
-          is_expected.to include('bla bla ')
+        context 'not a single sentence' do
+          it 'cuts the text with a dot (edge case)' do
+            is_expected.to include('bla bla . #bienenlive')
+          end
         end
 
         describe 'containing sentences' do
           let(:main_part) { 'bla bla bla end.' * 300 }
 
           it 'cuts at sentences' do
-            is_expected.to include('bla bla end.')
+            is_expected.to include('bla bla end. #bienenlive')
           end
         end
       end
