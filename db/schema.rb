@@ -111,12 +111,11 @@ ActiveRecord::Schema.define(version: 20190329172105) do
 
   create_table "reports", force: :cascade do |t|
     t.date     "start_date"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string   "name"
     t.string   "video"
     t.integer  "duration"
-    t.string   "frontend_base_url"
     t.string   "hive_id"
   end
 
@@ -128,7 +127,6 @@ ActiveRecord::Schema.define(version: 20190329172105) do
     t.integer  "sensor_id"
     t.integer  "release",            default: 0
     t.bigint   "smaxtec_timestamp"
-    t.string   "annotation"
     t.index ["sensor_id"], name: "index_sensor_readings_on_sensor_id", using: :btree
   end
 
