@@ -32,7 +32,7 @@ class TweetDecorator
     call_to_action = "#{HASHTAG} - Mehr erfahren: #{read_more_link}"
     remaining_characters = 280 - call_to_action.length - 1 # 1 whitespace
     text = ActionController::Base.helpers.strip_tags(@diary_entry.main_part)
-    text = ActionController::Base.helpers.truncate(text, length: remaining_characters, separator: '.')
+    text = ActionController::Base.helpers.truncate(text, length: remaining_characters, separator: '.', ommission: '')
     text = text.gsub(/\s+/, ' ').strip
     "#{text} #{call_to_action}"
   end
