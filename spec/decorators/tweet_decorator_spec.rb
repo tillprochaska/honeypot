@@ -26,13 +26,20 @@ RSpec.describe TweetDecorator do
 
     context 'with a text component' do
       let(:main_part) { 'Must be included in the tweet' }
-      let(:components) { create_list(:text_component, 1, main_part: main_part) }
+      let(:intro) { '' }
+      let(:components) { create_list(:text_component, 1, introduction: intro, main_part: main_part) }
 
       before { report.text_components << components }
 
       it { is_expected.to include('Must be included in the tweet') }
       it 'removes markup' do
         is_expected.not_to include('<p>')
+      end
+
+      context 'given intro' do
+        let(:intro) { 'Your majesty queen maja is speaking:' }
+
+        it { is_expected.to include('Your majesty queen maja is speaking:') }
       end
 
       context 'excessively long texts' do
