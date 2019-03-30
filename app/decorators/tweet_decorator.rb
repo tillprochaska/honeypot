@@ -43,7 +43,7 @@ class TweetDecorator
 
   def tweet_content
     read_more = READ_MORE_VARIATIONS.sample
-    call_to_action = "#{HASHTAG} - #{read_more}: #{read_more_link}"
+    call_to_action = "#{read_more}: #{read_more_link} #{HASHTAG}"
     remaining_characters = 280 - call_to_action.length - 1 # 1 whitespace
     text = ActionController::Base.helpers.strip_tags(@diary_entry.introduction)
     text += ActionController::Base.helpers.strip_tags(@diary_entry.main_part)

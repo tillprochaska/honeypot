@@ -21,7 +21,7 @@ RSpec.describe TweetDecorator do
 
       before { report.save(validate: false) }
 
-      it { is_expected.to end_with('https://bienenlive.wdr.de') }
+      it { is_expected.to include('https://bienenlive.wdr.de ') }
     end
 
     context 'with a text component' do
@@ -53,7 +53,7 @@ RSpec.describe TweetDecorator do
 
         context 'not a single sentence' do
           it 'cuts the text with a dot (edge case)' do
-            is_expected.to include('bla bl. #bienenlive')
+            is_expected.to include('bla bla . Mehr erfahren: ')
           end
         end
 
@@ -61,7 +61,7 @@ RSpec.describe TweetDecorator do
           let(:main_part) { 'bla bla bla end.' * 300 }
 
           it 'cuts at sentences' do
-            is_expected.to include('bla bla end. #bienenlive')
+            is_expected.to include('bla bla end. Mehr erfahren: ')
           end
         end
       end
