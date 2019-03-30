@@ -13,6 +13,10 @@ every 1.minutes do
   rake 'cache:delete'
 end
 
+every :hour, at: 5 do
+  rake 'wolf_waagen_api:fetch'
+end
+
 %w[09:00 14:00 19:00].each do |time|
   every :day, at: time do
     # ["Königreich Köln (Gimnich)", 4]
