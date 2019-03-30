@@ -2,16 +2,18 @@
 
 require 'rails_helper'
 
-RSpec.describe WolfWaagenApi::Result do
-  before(:each) do
-    @valid_req = WolfWaagenApi::Request.new(
+RSpec.describe WolfWaagenApi::Point do
+  let(:valid_req) do
+    WolfWaagenApi::Request.new(
       hive_id: 'HIVE_ID',
       start_date: DateTime.new,
       end_date: DateTime.new
     )
+  end
 
-    @valid_res = WolfWaagenApi::Result.new(
-      request: @valid_req,
+  let(:valid_res) do
+    described_class.new(
+      request: valid_req,
       data: {
         pointStart: 1546300800000, # 2019-01-01 00:00:00
         pointInterval: 300000, # 5 minutes
@@ -23,21 +25,23 @@ RSpec.describe WolfWaagenApi::Result do
         }]
       }
     )
+  end
 
-    @valid_series = @valid_res.series[0]
+  let(:valid_series) do
+    valid_res.series[0]
   end
 
   describe '#initialize' do
     it 'validates series' do
       expect do
-        WolfWaagenApi::Point.new(series: nil, index: 0, value: 100)
+        described_class.new(series: nil, index: 0, value: 100)
       end.to raise_error ArgumentError
     end
 
     it 'validates index' do
       expect do
-        WolfWaagenApi::Point.new(
-          series: @valid_series,
+        described_class.new(
+          series: valid_series,
           index: 'strings not allowed',
           value: 100
         )
@@ -45,16 +49,14 @@ RSpec.describe WolfWaagenApi::Result do
     end
 
     it 'calculates date and time based on the series’ date and interval' do
-      expect do
-        point = WolfWaagenApi::Point.new(
-          series: @valid_series,
-          index: 3,
-          value: 100
-        )
+      point = described_class.new(
+        series: valid_series,
+        index: 3,
+        value: 100
+      )
 
-        expected = 1546301100000 # 2019-01-01 00:05:00
-        expect(point.datetime).to eql(expected)
-      end
+      expected = 1546301100000 # 2019-01-01 00:05:00
+      expect(point.datetime).to eql(expected)
     end
   end
 end

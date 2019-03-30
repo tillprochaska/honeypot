@@ -3,15 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Result do
-  before(:each) do
-    @valid_req = WolfWaagenApi::Request.new(
+  let(:valid_req) do
+    WolfWaagenApi::Request.new(
       hive_id: 'HIVE_ID',
       start_date: DateTime.new,
       end_date: DateTime.new
     )
+  end
 
-    @valid_data = {
-      pointStart: 1546297200000,
+  let(:valid_data) do
+    pointStart: 1546297200000,
       pointInterval: 300000,
       series: [{
         id: 'weight',
@@ -19,13 +20,12 @@ RSpec.describe WolfWaagenApi::Result do
         accuracy: 2,
         values: [1.023, 2, 3]
       }]
-    }
   end
 
   describe '#initialize' do
     it 'validates request' do
       expect do
-        WolfWaagenApi::Result.new(
+        described_class.new(
           request: nil,
           data: @valid_data
         )
@@ -37,7 +37,7 @@ RSpec.describe WolfWaagenApi::Result do
       data[:pointStart] = 1234.03
 
       expect do
-        WolfWaagenApi::Result.new(
+        described_class.new(
           request: @valid_req,
           data: data
         )
@@ -53,7 +53,7 @@ RSpec.describe WolfWaagenApi::Result do
       data = @valid_data
       data[:series][0][:values] = nil
 
-      res = WolfWaagenApi::Result.new(
+      res = described_class.new(
         request: @valid_req,
         data: data
       )
@@ -64,7 +64,7 @@ RSpec.describe WolfWaagenApi::Result do
 
   describe '#series' do
     it 'wraps measurement series in `Series` objects' do
-      result = WolfWaagenApi::Result.new(
+      result = described_class.new(
         request: @valid_req,
         data: @valid_data
       )

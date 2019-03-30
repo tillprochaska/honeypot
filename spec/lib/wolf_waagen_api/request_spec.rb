@@ -6,7 +6,7 @@ RSpec.describe WolfWaagenApi::Request do
   describe '#initialize' do
     it 'validates start date/time' do
       expect do
-        WolfWaagenApi::Request.new(
+        described_class.new(
           hive_id: 'HIVE_ID',
           start_date: DateTime.new,
           end_date: nil
@@ -16,7 +16,7 @@ RSpec.describe WolfWaagenApi::Request do
 
     it 'validates end date/time' do
       expect do
-        WolfWaagenApi::Request.new(
+        described_class.new(
           hive_id: 'HIVE_ID',
           start_date: nil,
           end_date: DateTime.new
@@ -26,7 +26,7 @@ RSpec.describe WolfWaagenApi::Request do
 
     it 'validates interval' do
       expect do
-        WolfWaagenApi::Request.new(
+        described_class.new(
           hive_id: 'HIVE_ID',
           start_date: DateTime.new,
           end_date: DateTime.new,
@@ -36,7 +36,7 @@ RSpec.describe WolfWaagenApi::Request do
     end
 
     it 'defaults to hourly interval' do
-      req = WolfWaagenApi::Request.new(
+      req = described_class.new(
         hive_id: 'HIVE_ID',
         start_date: DateTime.new,
         end_date: DateTime.new
@@ -51,7 +51,7 @@ RSpec.describe WolfWaagenApi::Request do
       start_date = DateTime.new(2019, 0o1, 0o1)
       end_date = DateTime.new(2019, 0o1, 0o2)
 
-      req = WolfWaagenApi::Request.new(
+      req = described_class.new(
         hive_id: 'HIVE_ID',
         start_date: start_date,
         end_date: end_date,
