@@ -45,9 +45,10 @@ class TweetDecorator
     read_more = READ_MORE_VARIATIONS.sample
     call_to_action = "#{HASHTAG} - #{read_more}: #{read_more_link}"
     remaining_characters = 280 - call_to_action.length - 1 # 1 whitespace
-    text = ActionController::Base.helpers.strip_tags(@diary_entry.main_part)
-    text = ActionController::Base.helpers.truncate(text, length: remaining_characters, separator: '.', omission: '.')
+    text = ActionController::Base.helpers.strip_tags(@diary_entry.introduction)
+    text += ActionController::Base.helpers.strip_tags(@diary_entry.main_part)
     text = text.gsub(/\s+/, ' ').strip
+    text = ActionController::Base.helpers.truncate(text, length: remaining_characters, separator: '.', omission: '.')
     "#{text} #{call_to_action}"
   end
 end
