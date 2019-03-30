@@ -12,6 +12,14 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def authenticated_request?
+    given_header = request.headers['HTTP_WEBHOOK_SECRET']
+    return false if ENV['WEBHOOK_SECRET'].blank?
+    return false if given_header.blank?
+
+    given_header == ENV['WEBHOOK_SECRET']
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
     devise_parameter_sanitizer.permit(:account_update, keys: [:name])

@@ -17,6 +17,9 @@ RSpec.describe 'Assign sensor by address', type: :request do
   let(:headers) { { 'ACCEPT' => 'application/json' } }
   let(:sensor_id) { sensor.id }
   let(:url) { "/reports/#{report.id}/sensors/#{sensor_id}/sensor_readings" }
+  let(:user) { create(:user) }
+
+  before { sign_in user }
 
   context 'multiple sensors' do
     let(:temperature) { create(:sensor, address: 123) }

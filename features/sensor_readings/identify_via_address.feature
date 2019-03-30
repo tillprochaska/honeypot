@@ -5,6 +5,9 @@ Feature: Identify Sensors by I2C Address
 
   Background:
     Given I send and accept JSON
+    And I set headers:
+      | Webhook-Secret | YOUR_WEBHOOK_SECRET |
+      | Custom Header  | X-Webhook-Secret    |
 
   Scenario Outline: Receive sensor reading with an I2C address
     Given I have a sensor with a I2C address <address>
@@ -20,7 +23,9 @@ Feature: Identify Sensors by I2C Address
     """
     And notice that we OVERRIDE the given sensor id 1 here
     Then the response status should be "201"
-    And now the sensor has a new sensor reading in the database
+    And now the sensor has the following readings in the database:
+      | Calibrated value | Uncalibrated value |
+      | 47               | 11                 |
 
     Examples:
       | address | note                    |

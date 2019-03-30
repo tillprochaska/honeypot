@@ -113,3 +113,5 @@ end
 After do
   Timecop.return
 end
+
+ENV['WEBHOOK_SECRET'] = 'YOUR_WEBHOOK_SECRET'

@@ -3,7 +3,7 @@
 class SensorReadingsController < ApplicationController
   include CommonFilters
   before_action :set_sensor
-  before_action :authenticate_user!, except: %i[index create debug destroy]
+  before_action :authenticate_user!, except: %i[index create]
 
   def index
     from_and_to_params_are_dates(filter_params) || return
@@ -32,6 +32,10 @@ class SensorReadingsController < ApplicationController
   end
 
   def create
+    unless user_signed_in? || authenticated_request?
+      return render nothing: true, status: :unauthorized
+    end
+
     @sensor_reading = Sensor::Reading.new(sensor_reading_params)
     @sensor_reading.sensor = @sensor
     respond_to do |format|
