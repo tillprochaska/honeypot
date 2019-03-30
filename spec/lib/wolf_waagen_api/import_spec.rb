@@ -4,16 +4,19 @@ require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Import do
   let(:report) do
-    create(:report, name: 'Example Report', hive_id: 'HIVE_ID', start_date: DateTime.new(2019, 1, 1))
+    create(:report, hive_id: 'HIVE_ID', start_date: DateTime.new(2019, 1, 1))
+  end
+
+  let(:report_without_hive_id) do
+    create(:report, hive_id: nil)
   end
 
   let(:other_report) do
-    create(:report, name: 'Other Report', hive_id: 'HIVE_ID2')
+    create(:report, hive_id: 'HIVE_ID2')
   end
 
   let(:wolf_sensor_type) do
     specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first
-
     create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
   end
 
@@ -26,11 +29,23 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   let(:wolf_sensor_reading) do
-    create(:sensor_reading, sensor: wolf_sensor, created_at: DateTime.new(2019, 1, 2), calibrated_value: 100, uncalibrated_value: 100)
+    create(
+      :sensor_reading,
+      sensor: wolf_sensor,
+      created_at: DateTime.new(2019, 1, 2),
+      calibrated_value: 100,
+      uncalibrated_value: 100
+    )
   end
 
   let(:wolf_sensor_reading2) do
-    create(:sensor_reading, sensor: wolf_sensor2, created_at: DateTime.new(2019, 1, 3), calibrated_value: 100, uncalibrated_value: 100)
+    create(
+      :sensor_reading,
+      sensor: wolf_sensor2,
+      created_at: DateTime.new(2019, 1, 3),
+      calibrated_value: 100,
+      uncalibrated_value: 100
+    )
   end
 
   let(:other_sensor_type) do
@@ -45,38 +60,39 @@ RSpec.describe WolfWaagenApi::Import do
     create(:sensor, sensor_type: wolf_sensor_type, name: 'Other Report’s Wolf Sensor', report: other_report)
   end
 
+  let(:import) { described_class.new(report: report) }
+
   describe '#initialize' do
     it 'validates report' do
-      expect do
-        described_class.new(report: nil)
-      end.to raise_error ArgumentError
+      expect { described_class.new(report: nil) }.to raise_error ArgumentError
     end
 
     it 'ensures report has a `hive_id`' do
-      expect do
-        described_class.new(report: Report.first)
-      end.to raise_error ArgumentError
+      expect { described_class.new(report: report_without_hive_id) }.to raise_error ArgumentError
     end
   end
 
   describe '#api_sensors' do
-    subject do
-      described_class.new(report: report).api_sensors
-    end
+    subject { import.api_sensors }
 
     context 'given sensors of types not sepcified in constant' do
-      before { other_type_sensor }
+      before do
+        wolf_sensor
+        other_type_sensor
+      end
 
-      it {
-        is_expected.not_to include(other_type_sensor)
-      }
+      it { is_expected.to eq([ wolf_sensor ]) }
     end
 
     context 'given sensor for other reports' do
-      before { other_type_sensor }
+      before do
+        wolf_sensor
+        other_report_sensor
+      end
 
-      it { is_expected.not_to include(other_report_sensor) }
+      it { is_expected.to eq([ wolf_sensor ]) }
     end
+
 
     context 'given no matching sensor' do
       before { other_sensor_type }
@@ -92,29 +108,21 @@ RSpec.describe WolfWaagenApi::Import do
   describe '#api_sensors_by_series_id' do
     subject do
       specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first
-      import = described_class.new(report: report)
       import.api_sensors_by_series_id(series_id: specified_type[:series_id])
     end
 
     context 'if no sensor type matches' do
-      before do
-        other_type_sensor
-      end
-
+      before { other_type_sensor }
       it { is_expected.to eq([]) }
     end
 
     context 'if no sensor matches' do
-      before do
-        wolf_sensor_type
-      end
-
+      before { wolf_sensor_type }
       it { is_expected.to eq([]) }
     end
   end
 
   describe '#start_date' do
-    subject { described_class.new(report: report).start_date }
 
     context 'given no sensor readings for one of two sensors' do
       before do
@@ -165,26 +173,23 @@ RSpec.describe WolfWaagenApi::Import do
       )
     end
 
-    let(:import) do
-      described_class.new(report: report)
-    end
-
     context 'given a Wolf Waagen sensor' do
       before { wolf_sensor }
 
-      it 'creates sensor readings for that sensor' do
-        import.save_series_points(series: result.series.first)
-        saved_values = wolf_sensor.sensor_readings.pluck(:calibrated_value)
+      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
 
-        expect(saved_values).to eq([10, 20, 30])
+      context 'creates sensor readings for that sensor' do
+        before { import.save_series_points(series: result.series.first) }
+        it { is_expected.to eq([10, 20, 30]) }
       end
 
-      it 'does not create duplicate sensor readings' do
-        import.save_series_points(series: result.series.first)
-        import.save_series_points(series: result.series.first)
-        saved_values = wolf_sensor.sensor_readings.pluck(:calibrated_value)
-
-        expect(saved_values).to eq([10, 20, 30])
+      context 'does not create duplicate sensor readings' do
+        before do
+          import.save_series_points(series: result.series.first)
+          import.save_series_points(series: result.series.first)
+        end
+        
+        it { is_expected.to eq([10, 20, 30]) }
       end
     end
 
