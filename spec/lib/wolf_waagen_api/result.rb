@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Result do
-
   before(:each) do
     @valid_req = WolfWaagenApi::Request.new(
       hive_id: 'HIVE_ID',
@@ -22,26 +23,25 @@ RSpec.describe WolfWaagenApi::Result do
   end
 
   describe '#initialize' do
-
     it 'validates request' do
-      expect {
+      expect do
         WolfWaagenApi::Result.new(
           request: nil,
           data: @valid_data
         )
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
     end
 
     it 'ensures the earliest date is given as a millisecond timestamp' do
       data = @valid_data
       data[:pointStart] = 1234.03
 
-      expect {
+      expect do
         WolfWaagenApi::Result.new(
           request: @valid_req,
           data: data
         )
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
     end
 
     it 'ensures the interval is given in milliseconds' do
@@ -60,11 +60,9 @@ RSpec.describe WolfWaagenApi::Result do
 
       expect(res.series).to eql([])
     end
-
   end
 
   describe '#series' do
-
     it 'wraps measurement series in `Series` objects' do
       result = WolfWaagenApi::Result.new(
         request: @valid_req,
@@ -73,7 +71,5 @@ RSpec.describe WolfWaagenApi::Result do
 
       expect(result.series).to all(be_a(WolfWaagenApi::Series))
     end
-
   end
-
 end

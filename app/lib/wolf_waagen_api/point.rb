@@ -1,21 +1,17 @@
+# frozen_string_literal: true
+
 module WolfWaagenApi
-
   class Point
-
     attr_accessor :series, :index, :data
     delegate :id, to: :@series, prefix: :series # series_id
     delegate :unit, :accuracy, to: :@series
 
     def initialize(series:, index:, data:)
-      if not series.is_a? Series
-        raise ArgumentError.new('`series` should be an instance of `Series`.')
-      end
+      raise ArgumentError, '`series` should be an instance of `Series`.' unless series.is_a? Series
 
       @series = series
 
-      if not index.is_a? Integer
-        raise ArgumentError.new('`index` should be an integer value.')
-      end
+      raise ArgumentError, '`index` should be an integer value.' unless index.is_a? Integer
 
       @index = index
       @data = data
@@ -27,5 +23,4 @@ module WolfWaagenApi
       @series.earliest_date + (offset / 1000).seconds
     end
   end
-
 end

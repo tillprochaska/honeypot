@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Result do
-
   before(:each) do
     @valid_req = WolfWaagenApi::Request.new(
       hive_id: 'HIVE_ID',
@@ -27,25 +28,24 @@ RSpec.describe WolfWaagenApi::Result do
   end
 
   describe '#initialize' do
-
     it 'validates series' do
-      expect {
+      expect do
         WolfWaagenApi::Point.new(series: nil, index: 0, value: 100)
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
     end
 
     it 'validates index' do
-      expect {
+      expect do
         WolfWaagenApi::Point.new(
           series: @valid_series,
           index: 'strings not allowed',
           value: 100
         )
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
     end
 
     it 'calculates date and time based on the series’ date and interval' do
-      expect {
+      expect do
         point = WolfWaagenApi::Point.new(
           series: @valid_series,
           index: 3,
@@ -54,9 +54,7 @@ RSpec.describe WolfWaagenApi::Result do
 
         expected = 1546301100000 # 2019-01-01 00:05:00
         expect(point.datetime).to eql(expected)
-      }
+      end
     end
-
   end
-
 end
