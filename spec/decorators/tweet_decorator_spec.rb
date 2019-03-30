@@ -50,7 +50,7 @@ RSpec.describe TweetDecorator do
           let(:main_part) { 'bla bla bla end.' * 300 }
 
           it 'cuts at sentences' do
-            is_expected.to include('bla bla end')
+            is_expected.to include('bla bla end.')
           end
         end
       end
