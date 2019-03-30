@@ -12,7 +12,7 @@ RSpec.describe WolfWaagenApi::Point do
   end
 
   let(:valid_res) do
-    described_class.new(
+    WolfWaagenApi::Result.new(
       request: valid_req,
       data: {
         pointStart: 1546300800000, # 2019-01-01 00:00:00
@@ -34,7 +34,7 @@ RSpec.describe WolfWaagenApi::Point do
   describe '#initialize' do
     it 'validates series' do
       expect do
-        described_class.new(series: nil, index: 0, value: 100)
+        described_class.new(series: nil, index: 0, data: 100)
       end.to raise_error ArgumentError
     end
 
@@ -43,7 +43,7 @@ RSpec.describe WolfWaagenApi::Point do
         described_class.new(
           series: valid_series,
           index: 'strings not allowed',
-          value: 100
+          data: 100
         )
       end.to raise_error ArgumentError
     end
@@ -52,10 +52,10 @@ RSpec.describe WolfWaagenApi::Point do
       point = described_class.new(
         series: valid_series,
         index: 3,
-        value: 100
+        data: 100
       )
 
-      expected = 1546301100000 # 2019-01-01 00:05:00
+      expected = DateTime.new(2019, 1, 1, 0, 15, 0)
       expect(point.datetime).to eql(expected)
     end
   end

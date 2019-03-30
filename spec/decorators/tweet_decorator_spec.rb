@@ -46,7 +46,7 @@ RSpec.describe TweetDecorator do
 
         context 'not a single sentence' do
           it 'cuts the text with a dot (edge case)' do
-            is_expected.to include('bla bla . #bienenlive')
+            is_expected.to include('bla bl. #bienenlive')
           end
         end
 
