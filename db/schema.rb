@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190329171945) do
+ActiveRecord::Schema.define(version: 20190329172105) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(version: 20190329171945) do
     t.string   "video"
     t.integer  "duration"
     t.string   "frontend_base_url"
+    t.string   "hive_id"
   end
 
   create_table "sensor_readings", force: :cascade do |t|
