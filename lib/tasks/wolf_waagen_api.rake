@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 namespace :wolf_waagen_api do
-
   desc 'Set up sensor types for Wolf Waagen sensors.'
   task setup: :environment do
     WolfWaagenApi::Import::SENSOR_TYPES.each do |type|
@@ -24,5 +23,4 @@ namespace :wolf_waagen_api do
       import.run
     end
   end
-
 end

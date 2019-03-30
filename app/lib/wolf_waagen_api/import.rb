@@ -2,7 +2,6 @@
 
 module WolfWaagenApi
   class Import
-
     SENSOR_TYPES = [{
       property: 'Ertrag (Wolf Waagen API)',
       unit: 'kg',
@@ -38,23 +37,24 @@ module WolfWaagenApi
       unit: 'km/h',
       accuracy: 1,
       series_id: 'wind_gust'
-    }]
+    }].freeze
 
-    def initialize(report: report)
-      raise ArgumentError.new('`report` should have an `hive_id` attribute.') unless report.hive_id
+    def initialize(report:)
+      raise ArgumentError, '`report` should have an `hive_id` attribute.' unless report.hive_id
+
       @report = report
     end
 
     def run
       request = Request.new(
         hive_id: @report.hive_id,
-        start_date: self.start_date,
+        start_date: start_date,
         end_date: DateTime.now
       )
 
       result = request.send
       result.series.each do |series|
-        self.save_series_points(series)
+        save_series_points(series)
       end
     end
 
@@ -62,45 +62,41 @@ module WolfWaagenApi
       @report.sensors.select do |sensor|
         SENSOR_TYPES.find do |type|
           sensor.sensor_type.property == type[:property] &&
-          sensor.sensor_type.unit == type[:unit]
+            sensor.sensor_type.unit == type[:unit]
         end
       end
     end
 
-    def api_sensors_by_series_id(series_id: series_id)
-      type = SENSOR_TYPES.find { |type| type[:series_id] == series_id }
+    def api_sensors_by_series_id(series_id:)
+      type = SENSOR_TYPES.find { |t| t[:series_id] == series_id }
 
-      sensors = self.api_sensors.select do |sensor|
+      api_sensors.select do |sensor|
         # some of the data series the API returns might
         # not have mappings to sensor types in the story board
         type &&
-        sensor.sensor_type.property == type[:property] &&
-        sensor.sensor_type.unit == type[:unit]
+          sensor.sensor_type.property == type[:property] &&
+          sensor.sensor_type.unit == type[:unit]
       end
     end
 
     def start_date
       date = nil
 
-      self.api_sensors.each do |sensor|
+      api_sensors.each do |sensor|
         latest_reading_date = sensor.sensor_readings.maximum(:created_at)
 
         # If no readings have been imported yet, fetch readings
         # since the beginning of the report
-        if not latest_reading_date
-          latest_reading_date = @report.start_date
-        end
+        latest_reading_date ||= @report.start_date
 
-        if date.nil? || latest_reading_date < date
-          date = latest_reading_date
-        end
+        date = latest_reading_date if date.nil? || latest_reading_date < date
       end
 
       date.to_datetime
     end
 
     def save_series_points(series)
-      sensors = self.api_sensors_by_series_id(series_id: series.id)
+      sensors = api_sensors_by_series_id(series_id: series.id)
 
       sensors.each do |sensor|
         series.points.each do |point|
@@ -113,6 +109,5 @@ module WolfWaagenApi
         end
       end
     end
-
   end
 end
