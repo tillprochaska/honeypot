@@ -17,21 +17,21 @@ every :hour, at: 5 do
   rake 'wolf_waagen_api:fetch'
 end
 
-%w[09:00 14:00 19:00].each do |time|
+%w[09:10 14:10 19:10].each do |time|
   every :day, at: time do
     # ["Königreich Köln (Gimnich)", 4]
     rake 'twitter:tweet[4]'
   end
 end
 
-%w[09:30 14:30 19:30].each do |time|
+%w[09:40 14:40 19:40].each do |time|
   every :day, at: time do
     # ["Königreich Lage (Strulik)", 2]
     rake 'twitter:tweet[2]'
   end
 end
 
-%w[10:00 15:00 20:00].each do |time|
+%w[10:10 15:10 20:10].each do |time|
   every :day, at: time do
     # ["Königreich Witten (Marcel)", 3]
     rake 'twitter:tweet[3]'
