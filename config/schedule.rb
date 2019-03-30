@@ -9,6 +9,10 @@
 #
 set :output, './log/cron.log'
 
+every 1.minutes do
+  rake 'cache:delete'
+end
+
 %w[09:00 14:00 19:00].each do |time|
   every :day, at: time do
     # ["Königreich Köln (Gimnich)", 4]
@@ -28,10 +32,6 @@ end
     # ["Königreich Witten (Marcel)", 3]
     rake 'twitter:tweet[3]'
   end
-end
-
-every 1.minutes do
-  rake 'cache:delete'
 end
 #
 # every 4.days do
