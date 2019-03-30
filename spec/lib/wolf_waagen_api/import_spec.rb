@@ -81,7 +81,7 @@ RSpec.describe WolfWaagenApi::Import do
         other_type_sensor
       end
 
-      it { is_expected.to eq([ wolf_sensor ]) }
+      it { is_expected.to eq([wolf_sensor]) }
     end
 
     context 'given sensor for other reports' do
@@ -90,9 +90,8 @@ RSpec.describe WolfWaagenApi::Import do
         other_report_sensor
       end
 
-      it { is_expected.to eq([ wolf_sensor ]) }
+      it { is_expected.to eq([wolf_sensor]) }
     end
-
 
     context 'given no matching sensor' do
       before { other_sensor_type }
@@ -113,16 +112,19 @@ RSpec.describe WolfWaagenApi::Import do
 
     context 'if no sensor type matches' do
       before { other_type_sensor }
+
       it { is_expected.to eq([]) }
     end
 
     context 'if no sensor matches' do
       before { wolf_sensor_type }
+
       it { is_expected.to eq([]) }
     end
   end
 
   describe '#start_date' do
+    subject { import.start_date }
 
     context 'given no sensor readings for one of two sensors' do
       before do
@@ -174,12 +176,13 @@ RSpec.describe WolfWaagenApi::Import do
     end
 
     context 'given a Wolf Waagen sensor' do
-      before { wolf_sensor }
-
       subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+
+      before { wolf_sensor }
 
       context 'creates sensor readings for that sensor' do
         before { import.save_series_points(series: result.series.first) }
+
         it { is_expected.to eq([10, 20, 30]) }
       end
 
@@ -188,7 +191,7 @@ RSpec.describe WolfWaagenApi::Import do
           import.save_series_points(series: result.series.first)
           import.save_series_points(series: result.series.first)
         end
-        
+
         it { is_expected.to eq([10, 20, 30]) }
       end
     end
