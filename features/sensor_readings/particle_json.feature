@@ -2,6 +2,9 @@ Feature: Interface to Particle API
 
   Background:
     Given I send and accept JSON
+    And I set headers:
+      | Webhook-Secret | YOUR_WEBHOOK_SECRET |
+      | Custom Header  | X-Webhook-Secret    |
 
   Scenario: Receive a Particle JSON with an address
     Given I have a sensor with a I2C address "123"

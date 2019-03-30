@@ -5,6 +5,9 @@ Feature: Receive Sensor Readings
 
   Background:
     Given I send and accept JSON
+    And I set headers:
+      | Webhook-Secret | YOUR_WEBHOOK_SECRET |
+      | Custom Header  | X-Webhook-Secret    |
 
   Scenario: Receive sensor reading data
     Given I have a sensor with id 1

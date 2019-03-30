@@ -13,6 +13,9 @@ RSpec.describe Sensor::Reading, type: :request do
   let(:sensor) { create(:sensor, id: 11, report: report) }
   let(:url) { "/reports/#{report.id}/sensors/#{sensor.id}/sensor_readings" }
   let(:request) { post url, params: params.to_json, headers: headers }
+  let(:user) { create(:user) }
+
+  before { sign_in user }
 
   context 'sensor is calibrating' do
     let(:sensor) { create(:sensor, id: 123, calibrating: true) }

@@ -654,6 +654,8 @@ When(/^all subsequent sensor readings will be intercepted for a while$/) do
   # send and accept JSON
   header 'Accept', 'application/json'
   header 'Content-Type', 'application/json'
+  header 'Webhook-Secret', 'YOUR_WEBHOOK_SECRET'
+  header 'Custom Header', 'X-Webhook-Secret'
 
   expect(@sensor.sensor_readings).to be_empty
   @values = [3, 5, 7, 11, 13, 17].shuffle
