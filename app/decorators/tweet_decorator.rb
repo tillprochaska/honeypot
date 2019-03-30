@@ -25,7 +25,7 @@ class TweetDecorator
     report = @diary_entry.report
     return HOST if report.frontend_base_url.blank?
 
-    "#{HOST}/#{report.frontend_base_url}/mein-tagebuch/#{@diary_entry.id}"
+    "#{HOST}/#{report.frontend_base_url}/#{@diary_entry.id}"
   end
 
   def tweet_content
