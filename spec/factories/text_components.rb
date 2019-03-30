@@ -2,18 +2,18 @@
 
 FactoryBot.define do
   factory :text_component do
-    heading 'MyString'
-    introduction 'MyText'
-    main_part 'MyText'
-    closing 'MyText'
-    from_day nil
-    to_day nil
+    heading { 'MyString' }
+    introduction { 'MyText' }
+    main_part { 'MyText' }
+    closing { 'MyText' }
+    from_day { nil }
+    to_day { nil }
 
     association :report
 
     channel_ids { [Channel.sensorstory.id] }
 
-    publication_status :published
+    publication_status { :published }
 
     trait :active do
       # active by default

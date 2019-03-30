@@ -7,11 +7,15 @@ RSpec.describe 'DiaryEntries', type: :request do
   let(:headers) { { 'ACCEPT' => 'application/json', 'Content-Type' => 'application/json' } }
   let(:params) { {} }
   let(:js) { JSON.parse(response.body) }
+
   describe 'GET' do
+    let(:action) { get url, params: params, headers: headers }
+
     describe '/reports/:report_id/diary_entries/:id' do
       let(:url) { "/reports/#{report.id}/diary_entries/#{diary_entry.id}" }
 
       let(:diary_entry) { create(:diary_entry, report: report) }
+
       it 'sends only 3 text components' do
         create_list(:text_component, 4, report: report)
         action
@@ -35,7 +39,6 @@ RSpec.describe 'DiaryEntries', type: :request do
       end
     end
 
-    let(:action) { get url, params: params, headers: headers }
     describe '/reports/:id/diary_entries' do
       let(:url) { "/reports/#{report.id}/diary_entries" }
 
@@ -53,13 +56,16 @@ RSpec.describe 'DiaryEntries', type: :request do
 
         describe 'for #moment' do
           context 'invalid date' do
-            let(:params) { { to: 'bullshit' } }
             subject { response }
+
+            let(:params) { { to: 'bullshit' } }
+
             it { is_expected.to have_http_status(:unprocessable_entity) }
           end
 
           context 'params: { to: "2017-07-17T12:19:00.000Z" }' do
             let(:params) { { to: '2017-07-17T12:19:00.000Z' } }
+
             it 'contains only diary entries 1 and 2' do
               expect(js[0]['id']).to eq 1
               expect(js[1]['id']).to eq 2
@@ -69,6 +75,7 @@ RSpec.describe 'DiaryEntries', type: :request do
 
           context 'params: { from: "2017-07-17T12:19:00.000Z" }' do
             let(:params) { { from: '2017-07-17T12:19:00.000Z' } }
+
             it 'contains only diary entries 2 and 3' do
               expect(js[0]['id']).to eq 2
               expect(js[1]['id']).to eq 3
@@ -80,6 +87,7 @@ RSpec.describe 'DiaryEntries', type: :request do
         describe 'for #release' do
           context 'params: { filter: {release: "debug" }' do
             let(:params) { { release: 'debug' } }
+
             it 'contains only diary entries 2 and the live entry' do
               expect(js[0]['id']).to eq 0
               expect(js[1]['id']).to eq 2

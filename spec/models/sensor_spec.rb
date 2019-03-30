@@ -25,10 +25,13 @@ describe Sensor, type: :model do
   describe '#device_id' do
     context 'of two sensors with the same sensor type', issue: 474 do
       before { create(:sensor_type, id: 11) }
+
       it_behaves_like 'database unique attribute', :sensor, sensor_type_id: 11, device_id: 123
       context 'if #device_id is blank' do
-        before { create(:sensor, sensor_type_id: 11, device_id: '') }
         subject { build(:sensor, sensor_type_id: 11, device_id: '') }
+
+        before { create(:sensor, sensor_type_id: 11, device_id: '') }
+
         it { is_expected.to be_valid }
         it { expect { subject.save!(validate: false) }.not_to raise_error }
       end
@@ -38,10 +41,13 @@ describe Sensor, type: :model do
   describe '#animal_id' do
     context 'of two sensors with the same sensor type', issue: 500 do
       before { create(:sensor_type, id: 11) }
+
       it_behaves_like 'database unique attribute', :sensor, sensor_type_id: 11, animal_id: 123
       context 'if #animal_id is blank' do
-        before { create(:sensor, sensor_type_id: 11, animal_id: '') }
         subject { build(:sensor, sensor_type_id: 11, animal_id: '') }
+
+        before { create(:sensor, sensor_type_id: 11, animal_id: '') }
+
         it { is_expected.to be_valid }
         it { expect { subject.save!(validate: false) }.not_to raise_error }
       end
@@ -52,6 +58,7 @@ describe Sensor, type: :model do
     let(:sensor) { build(:sensor) }
     let(:first) { create(:sensor_reading, sensor: sensor, created_at: 5.seconds.ago) }
     let(:second) { create(:sensor_reading, sensor: sensor, created_at: Time.now) }
+
     before { first; second }
 
     it 'returns last sensor reading by default' do
@@ -84,6 +91,7 @@ describe Sensor, type: :model do
 
   describe '#calibrate' do
     let(:sensor) { create(:sensor) }
+
     it 'might update both values at once' do
       sensor_reading = Sensor::Reading.new(uncalibrated_value: 7.0)
       sensor.calibrate(sensor_reading)

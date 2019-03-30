@@ -306,7 +306,8 @@ Then(/^I see only (\d+) sensor readings$/) do |times|
 end
 
 Then(/^the first row is the most recent sensor reading$/) do
-  id = page.first('td').text
+  id = page.first('.sensor-reading-row')[:id]
+  id = id.sub('sensor-reading-', '')
   first_row = Sensor::Reading.find(id)
   most_recent = Sensor::Reading.order(:created_at).last
   expect(first_row.id).to eq most_recent.id
@@ -1375,12 +1376,16 @@ end
 
 Given(/^we have these sensor readings for sensor (\d+) in our database:$/) do |sensor_id, table|
   sensor = create(:sensor, id: sensor_id, report: Report.current)
+  @sensor = sensor
   table.hashes.each do |row|
+    annotation = row['Annotation']
+    annotation = nil if annotation.blank?
     create(:sensor_reading, sensor: sensor,
                             id: row['Id'],
                             created_at: row['Created at'],
                             calibrated_value: row['Calibrated value'],
                             uncalibrated_value: row['Uncalibrated value'],
+                            annotation: annotation,
                             release: row['Release'])
   end
 end
@@ -1495,4 +1500,17 @@ end
 
 When(/^I submit the form and delete the image$/) do
   click_on 'Update Text component'
+end
+
+Then('the annotation was successfully saved to the database and I can see it on the page') do
+  expect(page).to have_text('Sensor reading was successfully updated.')
+  expect(page.find('input[value="Sudden increase"]')).to be_present
+  expect(Sensor::Reading.find_by(annotation: 'Sudden increase'))
+end
+
+When('annotate sensor reading {int} with {string}') do |int, annotation|
+  within("#sensor-reading-#{int}") do
+    fill_in 'sensor_reading_annotation', with: annotation
+    click_on 'Annotate'
+  end
 end

@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'text_components/edit', type: :view do
   let(:report) { Report.current }
-  before(:each) do
+
+  before do
     @report = report
     @sensors = []
     @events = []
@@ -39,6 +40,7 @@ RSpec.describe 'text_components/edit', type: :view do
 
   context 'another report' do
     let(:report) { create(:report, name: 'UniqueReportName') }
+
     it 'will never show two seperate report input fields in one form' do
       render
       parsed = Capybara.string(rendered)

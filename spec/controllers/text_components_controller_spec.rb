@@ -73,6 +73,7 @@ RSpec.describe TextComponentsController, type: :controller do
   describe 'GET #duplicate' do
     let(:question_answer) { create(:question_answer, question: 'Question?', answer: 'Answer!') }
     let(:text_component) { create(:text_component, report_id: report.id, heading: 'Heading', question_answer_ids: [question_answer.id]) }
+
     before do
       get :duplicate, params: { report_id: report.id, id: text_component.id }, session: valid_session
     end
@@ -90,7 +91,7 @@ RSpec.describe TextComponentsController, type: :controller do
     end
 
     it "resets the duplicate's publication status to 'draft'" do
-      expect(assigns(:text_component).draft?).to be_truthy
+      expect(assigns(:text_component)).to be_draft
     end
 
     it 'removes all associated triggers' do

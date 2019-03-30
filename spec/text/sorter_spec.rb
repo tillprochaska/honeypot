@@ -4,8 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Text::Sorter do
   describe '#sort' do
-    let(:diary_entry) { DiaryEntry.new }
     subject { described_class.sort(text_components) }
+
+    let(:diary_entry) { DiaryEntry.new }
+
     let(:opts) { {} }
 
     context 'several text components with different priorities' do

@@ -13,15 +13,18 @@ RSpec.describe Report, type: :model do
   describe '#destroy' do
     let(:variables) { { a: 1, b: 2, c: 3 }.collect { |k, v| create(:variable, key: k, value: v) } }
     let (:report) { create(:report, variables: variables) }
+
     it 'destroys dependent variables' do
       report
-      expect { report.destroy }.to change { Variable.count }.from(3).to(0)
+      expect { report.destroy }.to change(Variable, :count).from(3).to(0)
     end
   end
 
   describe '#active_sensor_story_components' do
     subject { report.active_sensor_story_components(diary_entry) }
+
     let(:sensor) { create :sensor }
+
     it { is_expected.to be_empty }
 
     context 'given report has one text_component' do
@@ -33,15 +36,19 @@ RSpec.describe Report, type: :model do
       end
 
       let(:text_component) { create(:text_component) }
+
       context 'given a trigger connected to a sensor via a certain condition' do
         let(:trigger) { create :trigger, text_components: [text_component], report: report }
+
         before do
           create(:condition, sensor: sensor, trigger: trigger, from: 1, to: 3)
         end
 
         context 'for sensor readings with a certain intent' do
-          let(:diary_entry) { DiaryEntry.new(report: report, release: release) }
           subject { report.active_sensor_story_components(diary_entry) }
+
+          let(:diary_entry) { DiaryEntry.new(report: report, release: release) }
+
           before do
             create(:sensor_reading, sensor: sensor, release: :debug, calibrated_value: 2)
             create(:sensor_reading, sensor: sensor, release: :final, calibrated_value: 0)
@@ -49,11 +56,13 @@ RSpec.describe Report, type: :model do
 
           describe '#active_sensor_story_components :final' do
             let(:release) { :final }
+
             it { is_expected.not_to include text_component }
           end
 
           describe '#active_sensor_story_components :debug' do
             let(:release) { :debug }
+
             it { is_expected.to include text_component }
           end
         end

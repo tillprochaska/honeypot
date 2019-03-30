@@ -30,7 +30,7 @@ RSpec.describe 'text_components/index', type: :view do
      )]
   end
 
-  before(:each) do
+  before do
     assign(:report, report)
     assign(:diary_entry, diary_entry)
     assign(:text_component, TextComponent.new)

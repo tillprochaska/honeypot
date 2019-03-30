@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'actuators/edit', type: :view do
-  before(:each) do
+  before do
     @actor = assign(:actuator, Actuator.create!(
                                  name: 'MyString',
                                  port: 1

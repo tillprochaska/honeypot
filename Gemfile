@@ -39,6 +39,7 @@ gem 'devise'
 gem 'haml-rails'
 gem 'rack-cors', require: 'rack/cors'
 gem 'simple_form'
+gem 'twitter'
 gem 'whenever', require: false
 
 # Image upload to Amazon S3 Storage Cloud
@@ -73,6 +74,7 @@ group :development do
   gem 'highline'
   gem 'rails-erd'
   gem 'rubocop', require: false
+  gem 'rubocop-rspec'
   gem 'seed_dump'
 end
 

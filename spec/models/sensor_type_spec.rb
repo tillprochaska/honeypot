@@ -13,8 +13,10 @@ RSpec.describe SensorType, type: :model do
 
   describe '#fractionDigits' do
     context 'missing', issue: 666 do
-      let(:sensor_type) { build(:sensor_type, fractionDigits: nil) }
       subject { sensor_type }
+
+      let(:sensor_type) { build(:sensor_type, fractionDigits: nil) }
+
       it { is_expected.not_to be_valid }
     end
   end

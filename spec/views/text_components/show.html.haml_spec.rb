@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'text_components/show', type: :view do
   let(:report) { create(:report) }
-  before(:each) do
+
+  before do
     assign(:report, report)
     @text_component = assign(:text_component, create(
                                                 :text_component,

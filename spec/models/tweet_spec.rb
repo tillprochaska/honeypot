@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Tweet, type: :model do
   describe '#user' do
     subject { build(:tweet, user: nil) }
+
     it { is_expected.not_to be_valid }
 
     describe '#before_create' do
@@ -15,6 +16,7 @@ RSpec.describe Tweet, type: :model do
       end
       let(:chain) { create(:chain, hashtag: '#hashtag') }
       let(:chain2) { create(:chain, hashtag: '#another') }
+
       it 'auto-assigns the correct chain' do
         chain; chain2 # create chains
         tweet.save!
@@ -25,9 +27,10 @@ RSpec.describe Tweet, type: :model do
     describe '#after_create' do
       let(:actuator) { create(:actuator) }
       let(:chain) { create(:chain, actuator: actuator) }
+
       it 'creates a command' do
         tweet = build(:tweet, chain: chain)
-        expect { tweet.save }.to change { Command.count }.from(0).to(1)
+        expect { tweet.save }.to change(Command, :count).from(0).to(1)
       end
 
       it 'created command belongs to the tweet' do

@@ -6,8 +6,11 @@ require 'support/shared_examples/report_namespaced_controller'
 RSpec.describe 'Triggers', type: :request do
   let(:user) { create(:user) }
   before { sign_in user }
-  it_behaves_like 'a report/ namespaced controller', Trigger
+
   let(:report) { create(:report, id: 4711) }
+
+  it_behaves_like 'a report/ namespaced controller', Trigger
+
   describe 'GET /triggers' do
     it 'works! (now write some real specs)' do
       get report_triggers_path(report)
@@ -17,8 +20,9 @@ RSpec.describe 'Triggers', type: :request do
 
   describe 'POST /triggers' do
     let(:params) { { trigger: { report_id: Report.current.id, name: 'just a trigger' } } }
+
     it 'creates triggers' do
-      expect { post('/reports/1/triggers', params: params) }.to(change { Trigger.count }.from(0).to(1))
+      expect { post('/reports/1/triggers', params: params) }.to(change(Trigger, :count).from(0).to(1))
     end
 
     context 'given sensor condition params' do
@@ -35,7 +39,7 @@ RSpec.describe 'Triggers', type: :request do
             }
           }
         )
-        expect { post('/reports/1/triggers', params: params) }.to(change { Condition.count }.from(0).to(1))
+        expect { post('/reports/1/triggers', params: params) }.to(change(Condition, :count).from(0).to(1))
       end
     end
   end
