@@ -294,3 +294,7 @@ RSpec/IteratedExpectation:
   Exclude:
     - 'spec/views/text_components/edit.html.haml_spec.rb'
     - 'spec/views/text_components/edit.html.haml_spec.rb'
+
+Style/AsciiComments:
+  Exclude:
+    - 'config/schedule.rb'
