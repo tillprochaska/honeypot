@@ -26,10 +26,7 @@ Feature: Interface to Particle API
     When I send a POST request to "/reports/1/sensors/4711/sensor_readings" with the following:
     """
     {
-    "event": "measurement",
-    "data": "{ \"calibrated_value\": 8, \"uncalibrated_value\": 15 }",
-    "published_at": "2016-06-05T13:41:18.705Z",
-    "coreid": "1e0033001747343339383037"
+    "data": "{ \"calibrated_value\": 8, \"uncalibrated_value\": 15 }"
     }
     """
     Then the response status should be "201"
@@ -42,10 +39,7 @@ Feature: Interface to Particle API
     When I send a POST request to "/reports/1/sensors/4711/sensor_readings" with the following:
     """
     {
-    "event": "measurement",
-    "data": "{ \"calibrated_value\": 8",
-    "published_at": "2016-06-05T13:41:18.705Z",
-    "coreid": "1e0033001747343339383037"
+    "data": "{ \"calibrated_value\": 8"
     }
     """
     Then the response status should be "400"
