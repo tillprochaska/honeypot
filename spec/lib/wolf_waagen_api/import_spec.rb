@@ -4,88 +4,45 @@ require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Import do
   let(:report) do
-    Report.create!(
-      name: 'Example Report',
-      hive_id: 'HIVE_ID',
-      start_date: DateTime.new(2019, 1, 1)
-    )
+    create(:report, name: 'Example Report', hive_id: 'HIVE_ID', start_date: DateTime.new(2019, 1, 1))
   end
 
   let(:other_report) do
-    Report.create!(
-      name: 'Other Report',
-      hive_id: 'HIVE_ID2'
-    )
+    create(:report, name: 'Other Report', hive_id: 'HIVE_ID2')
   end
 
   let(:wolf_sensor_type) do
     specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first
 
-    SensorType.create!(
-      property: specified_type[:property],
-      unit: specified_type[:unit]
-    )
+    create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
   end
 
   let(:wolf_sensor) do
-    Sensor.create!(
-      sensor_type: wolf_sensor_type,
-      name: 'Wolf Sensor 1',
-      report: report,
-      address: 1
-    )
+    create(:sensor, sensor_type: wolf_sensor_type, name: 'Wolf Sensor 1', report: report)
   end
 
   let(:wolf_sensor2) do
-    Sensor.create!(
-      sensor_type: wolf_sensor_type,
-      name: 'Wolf Sensor 2',
-      report: report,
-      address: 2
-    )
+    create(:sensor, sensor_type: wolf_sensor_type, name: 'Wolf Sensor 2', report: report)
   end
 
   let(:wolf_sensor_reading) do
-    Sensor::Reading.create!(
-      sensor: wolf_sensor,
-      created_at: DateTime.new(2019, 1, 2),
-      calibrated_value: 100,
-      uncalibrated_value: 100
-    )
+    create(:sensor_reading, sensor: wolf_sensor, created_at: DateTime.new(2019, 1, 2), calibrated_value: 100, uncalibrated_value: 100)
   end
 
   let(:wolf_sensor_reading2) do
-    Sensor::Reading.create!(
-      sensor: wolf_sensor2,
-      created_at: DateTime.new(2019, 1, 3),
-      calibrated_value: 100,
-      uncalibrated_value: 100
-    )
+    create(:sensor_reading, sensor: wolf_sensor2, created_at: DateTime.new(2019, 1, 3), calibrated_value: 100, uncalibrated_value: 100)
   end
 
   let(:other_sensor_type) do
-    SensorType.create!(
-      property: 'Other Sensor Type',
-      unit: ''
-    )
+    create(:sensor_type, property: 'Other Sensor Type', unit: '')
   end
 
   let(:other_type_sensor) do
-    Sensor.create!(
-      sensor_type: other_sensor_type,
-      name: 'Other Sensor',
-      report: report,
-      address: 3
-    )
+    create(:sensor, sensor_type: other_sensor_type, name: 'Other Sensor', report: report)
   end
 
   let(:other_report_sensor) do
-    Sensor.create!(
-      sensor_type: wolf_sensor_type,
-      name: 'Other Report’s Wolf Sensor',
-      report: other_report,
-      address: 4
-    )
+    create(:sensor, sensor_type: wolf_sensor_type, name: 'Other Report’s Wolf Sensor', report: other_report)
   end
 
   describe '#initialize' do
