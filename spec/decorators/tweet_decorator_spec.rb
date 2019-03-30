@@ -7,6 +7,8 @@ RSpec.describe TweetDecorator do
   let(:report) { create(:report, frontend_base_url: 'https://bienenlive.wdr.de/bienenkoenigin/mein-tagebuch') }
   let(:diary_entry) { create(:diary_entry, id: 4711, report: report) }
 
+  before { stub_const('TweetDecorator::READ_MORE_VARIATIONS', ['Mehr erfahren']) }
+
   describe '#tweet_content' do
     subject { decorator.tweet_content }
 
