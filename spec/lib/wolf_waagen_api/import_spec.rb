@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/BlockLength
+
 require 'rails_helper'
 
 RSpec.describe WolfWaagenApi::Import do
@@ -16,7 +18,7 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   let(:wolf_sensor_type) do
-    specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first
+    specified_type = WolfWaagenApi::Import::SENSOR_TYPES.second
     create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
   end
 
@@ -61,6 +63,33 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   let(:import) { described_class.new(report: report) }
+
+  let(:request) do
+    WolfWaagenApi::Request.new(
+      hive_id: 'HIVE_ID',
+      start_date: DateTime.new(2019, 1, 1, 0, 0),
+      end_date: DateTime.new(2019, 1, 3, 0, 0)
+    )
+  end
+
+  let(:result) do
+    WolfWaagenApi::Result.new(
+      request: request,
+      data: {
+        pointStart: 1546300800000, # 2019-01-01 00:00:00
+        pointInterval: 1000 * 60 * 60 * 12,
+        series: [{
+          # temperature (not accumulated)
+          id: WolfWaagenApi::Import::SENSOR_TYPES.second[:series_id],
+          values: [10, 20, 30]
+        }, {
+          # yield (accumulated daily)
+          id: WolfWaagenApi::Import::SENSOR_TYPES.first[:series_id],
+          values: [10, 20, 30, 40]
+        }]
+      }
+    )
+  end
 
   describe '#initialize' do
     it 'validates report' do
@@ -153,28 +182,6 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   describe '#save_series_points' do
-    let(:request) do
-      WolfWaagenApi::Request.new(
-        hive_id: 'HIVE_ID',
-        start_date: DateTime.new(2019, 1, 1, 0, 0),
-        end_date: DateTime.new(2019, 1, 2, 0, 0)
-      )
-    end
-
-    let(:result) do
-      WolfWaagenApi::Result.new(
-        request: request,
-        data: {
-          pointStart: 1546300800000, # 2019-01-01 00:00:00
-          pointInterval: 60 * 60 * 1000,
-          series: [{
-            id: WolfWaagenApi::Import::SENSOR_TYPES.first[:series_id],
-            values: [10, 20, 30]
-          }]
-        }
-      )
-    end
-
     context 'given a Wolf Waagen sensor' do
       subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
 
@@ -196,6 +203,26 @@ RSpec.describe WolfWaagenApi::Import do
       end
     end
 
+    context 'given an sensor with accumulation of readings' do
+      let(:accumulated_wolf_sensor_type) do
+        specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first # Ertrag
+        create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
+      end
+
+      let(:accumulated_wolf_sensor) do
+        create(:sensor, sensor_type: accumulated_wolf_sensor_type, name: 'Wolf Sensor (accumulated)', report: report)
+      end
+
+      before { accumulated_wolf_sensor }
+
+      it 'accumulates values' do
+        import.save_series_points(series: result.series.second)
+        values = accumulated_wolf_sensor.sensor_readings.pluck(:calibrated_value)
+
+        expect(values).to eq([10, 30, 30, 70])
+      end
+    end
+
     context 'given two Wolf Waagen sensors' do
       before do
         wolf_sensor
@@ -212,4 +239,68 @@ RSpec.describe WolfWaagenApi::Import do
       end
     end
   end
+
+  describe '#accumulated_value' do
+    let(:series) do
+      result.series.second
+    end
+
+    context 'if no sensor readings exist' do
+      it 'returns point value' do
+        value = import.accumulated_value(
+          sensor: wolf_sensor,
+          interval: :daily,
+          point: series.points.second # 2019-01-01 12:00
+        )
+
+        expect(value).to eq(20) # existing 0 + given 20
+      end
+    end
+
+    context 'with existing sensor readings' do
+      let(:existing_reading) do
+        create(
+          :sensor_reading,
+          sensor: wolf_sensor,
+          created_at: DateTime.new(2019, 1, 1, 6),
+          calibrated_value: 20,
+          uncalibrated_value: 20
+        )
+      end
+
+      before { existing_reading }
+
+      it 'returns sum of given point and latest value in given interval' do
+        value = import.accumulated_value(
+          sensor: wolf_sensor,
+          interval: :daily,
+          point: series.points.second # 2019-01-01 12:00
+        )
+
+        expect(value).to eq(40) # existing 20 + given 20
+      end
+
+      it 'considers sensor readings in the given interval only' do
+        value = import.accumulated_value(
+          sensor: wolf_sensor,
+          interval: :daily,
+          point: series.points.third # 2019-01-02 00:00
+        )
+
+        expect(value).to eq(30) # existing 0 + given 30
+      end
+
+      it 'considers sensor readings created before the given point only' do
+        value = import.accumulated_value(
+          sensor: wolf_sensor,
+          interval: :daily,
+          point: series.points.first # 2019-01-01 00:00
+        )
+
+        expect(value).to eq(10) # existing 0 + given 10
+      end
+    end
+  end
 end
+
+# rubocop:enable Metrics/BlockLength

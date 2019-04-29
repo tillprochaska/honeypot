@@ -6,7 +6,8 @@ module WolfWaagenApi
       property: 'Ertrag (Wolf Waagen API)',
       unit: 'kg',
       accuracy: 2,
-      series_id: 'yield'
+      series_id: 'yield',
+      accumulate: :daily
     }, {
       property: 'Außentemperatur (Wolf Waagen API)',
       unit: '°C',
