@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
 namespace :duplicate_report_data do
-
   desc 'Copies all text components (including associated entities) for the given report to the other reports'
-  task :text_components, [:report_id] do |task, args|
-
-    raise 'Please enter a report to copy from' if not args[:report_id]
+  task :text_components, [:report_id] do |_task, args|
+    raise 'Please enter a report to copy from' unless args[:report_id]
 
     source_report = Report.find(args[:report_id])
     other_reports = Report.where.not(id: args[:report_id])
     other_reports = other_reports.where.not(name: 'Testbienenstock')
 
     other_reports.each do |other_report|
-      puts "Duplicating text components for report \"#{ other_report.name }\" …"
+      puts "Duplicating text components for report \"#{other_report.name}\" …"
 
       source_report.text_components.each do |original_text_component|
         find_or_create_text_component(other_report, original_text_component)
@@ -27,11 +25,11 @@ namespace :duplicate_report_data do
   # from `original_trigger. This is in order to prevent that relations
   # to associated records accidentally get copied, but not cloned.
   def find_or_create_text_component(target_report, original_text_component)
-    unique_cols = [
-      'created_at',
-      'heading', 'introduction', 'main_part', 'closing',
-      'from_day', 'to_day', 'from_hour', 'to_hour',
-      'topic_id', 'publication_status', 'assignee_id', 'notes',
+    unique_cols = %w[
+      created_at
+      heading introduction main_part closing
+      from_day to_day from_hour to_hour
+      topic_id publication_status assignee_id notes
     ]
 
     data = pluck_from_hash(original_text_component.attributes, unique_cols)
@@ -49,7 +47,6 @@ namespace :duplicate_report_data do
       text_component.triggers << trigger
     end
 
-
     text_component.save!
 
     text_component
@@ -59,13 +56,13 @@ namespace :duplicate_report_data do
   # trigger or creates a fresh one, copying some attributes and relations
   # from `original_trigger`.
   def find_or_create_trigger(target_report, original_trigger)
-    unique_cols = ['created_at', 'name', 'priority', 'validity_period']
+    unique_cols = %w[created_at name priority validity_period]
     data = pluck_from_hash(original_trigger.attributes, unique_cols)
     trigger = target_report.triggers.find_or_create_by! data
     trigger.report_id = target_report.id
 
     trigger.save!
-    
+
     original_trigger.conditions.each do |original_condition|
       condition = create_condition(trigger, original_condition)
       trigger.conditions << condition
@@ -82,7 +79,7 @@ namespace :duplicate_report_data do
 
   # Creates a new condition in `target_report`, based on `original_condition`.
   def create_condition(target_trigger, original_condition)
-    unique_cols = ['created_at', 'from', 'to']
+    unique_cols = %w[created_at from to]
     data = pluck_from_hash(original_condition.attributes, unique_cols)
 
     # Conditions do not have enough data on their own to uniquely identify
@@ -92,7 +89,8 @@ namespace :duplicate_report_data do
 
     # This task assumes that sensors for all reports already exist and
     # do not need to be created.
-    raise "Could not find sensor \"#{original_sensor.sensor_type.property}\" in report #{target_report.name}" if not sensor
+    raise "Could not find sensor \"#{original_sensor.sensor_type.property}\" in report #{target_report.name}" unless sensor
+
     data['sensor_id'] = sensor.id
 
     # Conditions belong to a single trigger only, so we can create a new
@@ -104,9 +102,8 @@ namespace :duplicate_report_data do
   end
 
   def pluck_from_hash(hash, keys)
-    hash.select do |key, val|
+    hash.select do |key, _val|
       keys.include? key
     end
   end
-
 end
