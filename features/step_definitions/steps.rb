@@ -1437,6 +1437,21 @@ Given(/^for this diary entry we have an active text component:$/) do |text|
                            triggers: [trigger])
 end
 
+Given(/^for this diary entry we have an active text component with the heading \"(.+)\":$/) do |heading, text|
+  trigger = create(:trigger, report: Report.current)
+  create(:condition,
+         sensor: @humidity_sensor,
+         trigger: trigger,
+         from: 0,
+         to: 100)
+  @text_component = create(:text_component,
+                           report: Report.current,
+                           channels: [Channel.sensorstory],
+                           heading: heading,
+                           main_part: text,
+                           triggers: [trigger])
+end
+
 Given(/^the sensor live report started on "([^"]*)"$/) do |date|
   @report = Report.current
   @report.start_date = date
