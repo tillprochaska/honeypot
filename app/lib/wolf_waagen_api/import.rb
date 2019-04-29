@@ -99,17 +99,47 @@ module WolfWaagenApi
 
     def save_series_points(series:)
       sensors = api_sensors_by_series_id(series_id: series.id)
+      interval = accumulation_interval_by_series_id(series_id: series.id)
 
       sensors.each do |sensor|
         series.points.each do |point|
+          value = accumulated_value(sensor: sensor, interval: interval, point: point)
+
           Sensor::Reading.find_or_create_by(
             sensor: sensor,
             created_at: point.datetime,
-            calibrated_value: point.data,
-            uncalibrated_value: point.data
+            calibrated_value: value,
+            uncalibrated_value: value
           )
         end
       end
+    end
+
+    def accumulation_interval_by_series_id(series_id:)
+      type = SENSOR_TYPES.find { |t| t[:series_id] == series_id }
+      type[:accumulate] if type&.key?(:accumulate)
+    end
+
+    def accumulated_value(sensor:, interval:, point:)
+      date = point.datetime
+      value = point.data
+
+      intervals = {
+        daily: date.beginning_of_day..date,
+        weekly: date.beginning_of_week..date,
+        monthly: date.beginning_of_month..date,
+        quarterly: date.beginning_of_quarter..date,
+        yearly: date.beginning_of_year..date
+      }
+
+      return value unless intervals.key? interval
+
+      range = intervals[interval]
+      latest_record = sensor.sensor_readings.where(created_at: range).order('created_at').last
+
+      return latest_record.calibrated_value + value if latest_record
+
+      value
     end
   end
 end
