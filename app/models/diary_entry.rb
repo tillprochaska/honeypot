@@ -63,7 +63,7 @@ class DiaryEntry < ActiveRecord::Base
     until stack.empty?
       until part.length >= BREAK_AFTER || stack.empty?
         current_component = stack.shift
-        subheading ||= current_component.heading if result.present? # no subheading at the very beginning
+        subheading ||= render(current_component, :heading) if result.present? # no subheading at the very beginning
         part += ' ' if part.present?
         part += render(current_component, :main_part)
 
