@@ -85,7 +85,9 @@ RSpec.describe WolfWaagenApi::Import do
         }, {
           # yield (accumulated daily)
           id: WolfWaagenApi::Import::SENSOR_TYPES.first[:series_id],
-          values: [10, 20, 30, 40]
+         # we have a daily accumulation interval and 12 hours frequency for new sensor readings
+         # so below, two values go together
+          values: [10, 20, 30, 40] 
         }]
       }
     )
