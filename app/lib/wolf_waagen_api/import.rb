@@ -103,8 +103,12 @@ module WolfWaagenApi
 
       sensors.each do |sensor|
         series.points.each do |point|
-          value = accumulated_value(sensor: sensor, interval: interval, point: point)
-
+          if interval
+            value = accumulated_value(sensor: sensor, interval: interval, point: point)
+          else
+            value = point.data
+          end
+            
           Sensor::Reading.find_or_create_by(
             sensor: sensor,
             created_at: point.datetime,
@@ -117,7 +121,7 @@ module WolfWaagenApi
 
     def accumulation_interval_by_series_id(series_id:)
       type = SENSOR_TYPES.find { |t| t[:series_id] == series_id }
-      type[:accumulate] if type&.key?(:accumulate)
+      type[:accumulate]
     end
 
     def accumulated_value(sensor:, interval:, point:)
@@ -132,14 +136,13 @@ module WolfWaagenApi
         yearly: date.beginning_of_year..date
       }
 
-      return value unless intervals.key? interval
+      raise ArgumentError "Not a valid interval: #{interval}" unless intervals.key? interval
 
       range = intervals[interval]
       latest_record = sensor.sensor_readings.where(created_at: range).order('created_at').last
+      latest_value = latest_record&.calibrated_value || 0;
 
-      return latest_record.calibrated_value + value if latest_record
-
-      value
+      return latest_value + value
     end
   end
 end

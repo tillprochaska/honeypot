@@ -77,7 +77,7 @@ RSpec.describe WolfWaagenApi::Import do
       request: request,
       data: {
         pointStart: 1546300800000, # 2019-01-01 00:00:00
-        pointInterval: 1000 * 60 * 60 * 12,
+        pointInterval: 12.hours.in_milliseconds,
         series: [{
           # temperature (not accumulated)
           id: WolfWaagenApi::Import::SENSOR_TYPES.second[:series_id],
