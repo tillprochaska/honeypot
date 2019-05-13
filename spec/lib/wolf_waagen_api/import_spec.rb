@@ -160,7 +160,7 @@ RSpec.describe WolfWaagenApi::Import do
 
   describe '#save_data' do
     context 'given a single matching sensor' do
-      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+      subject { wolf_sensor.sensor_readings.order(:created_at).pluck(:calibrated_value) }
 
       before { wolf_sensor }
 
@@ -188,10 +188,10 @@ RSpec.describe WolfWaagenApi::Import do
 
       it 'creates sensor readings for both sensors' do
         import.save_data(result: result)
-        saved_values1 = wolf_sensor.sensor_readings.pluck(:calibrated_value)
-        saved_values2 = wolf_sensor2.sensor_readings.pluck(:calibrated_value)
+        saved_values1 = wolf_sensor.sensor_readings.order(:created_at).pluck(:calibrated_value)
+        saved_values2 = wolf_sensor2.sensor_readings.order(:created_at).pluck(:calibrated_value)
 
-        expect(saved_values1).to eq([10, 30, 30])
+        expect(saved_values1).to eq([10, 20, 30])
         expect(saved_values2).to eq([10, 20, 30])
       end
     end
@@ -222,8 +222,8 @@ RSpec.describe WolfWaagenApi::Import do
 
       it 'creates readings for sensors of both types' do
         import.save_data(result: result)
-        saved_values1 = sensor1.sensor_readings.pluck(:calibrated_value)
-        saved_values2 = sensor2.sensor_readings.pluck(:calibrated_value)
+        saved_values1 = sensor1.sensor_readings.order(:created_at).pluck(:calibrated_value)
+        saved_values2 = sensor2.sensor_readings.order(:created_at).pluck(:calibrated_value)
 
         expect(saved_values1).to eq([10, 30, 30, 70]) # type for accumulated yield
         expect(saved_values2).to eq([10, 20, 30, 40]) # type for yield data only
@@ -234,7 +234,7 @@ RSpec.describe WolfWaagenApi::Import do
   describe '#save_series_data' do
 
     context 'given an accumulation interval' do
-      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+      subject { wolf_sensor.sensor_readings.order(:created_at).pluck(:calibrated_value) }
 
       context 'accumulates values' do
         before do
