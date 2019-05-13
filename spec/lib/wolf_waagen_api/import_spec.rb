@@ -233,7 +233,6 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   describe '#save_series_data' do
-
     context 'given an accumulation interval' do
       subject { wolf_sensor.sensor_readings.order(:created_at).pluck(:calibrated_value) }
 
@@ -261,7 +260,6 @@ RSpec.describe WolfWaagenApi::Import do
         it { is_expected.to eq([10, 10, 30]) }
       end
     end
-
   end
 
   describe '#accumulated_value' do

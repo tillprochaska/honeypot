@@ -91,13 +91,11 @@ module WolfWaagenApi
         value = point.data
         next if value.nil? # some values might be `nil`
 
-        if interval
-          value = accumulated_value(sensor: sensor, interval: interval, point: point)
-        end
-        
+        value = accumulated_value(sensor: sensor, interval: interval, point: point) if interval
+
         # binding.pry if sensor.id == 38
 
-        reading = Sensor::Reading.find_or_create_by(
+        Sensor::Reading.find_or_create_by(
           sensor: sensor,
           created_at: point.datetime,
           calibrated_value: value,
