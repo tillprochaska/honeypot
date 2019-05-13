@@ -3,11 +3,16 @@
 module WolfWaagenApi
   class Import
     SENSOR_TYPES = [{
-      property: 'Ertrag (Wolf Waagen API)',
+      property: 'Summierter Ertrag (Wolf Waagen API)',
       unit: 'kg',
       accuracy: 2,
       series_id: 'yield',
       accumulate: :daily
+    }, {
+      property: 'Ertrag (Wolf Waagen API)',
+      unit: 'kg',
+      accuracy: 2,
+      series_id: 'yield'
     }, {
       property: 'Außentemperatur (Wolf Waagen API)',
       unit: '°C',
@@ -74,7 +79,7 @@ module WolfWaagenApi
         series = result.series.find { |item| item.id == type[:series_id] }
 
         sensors.each do |sensor|
-          save_series_data(series: series, sensor: sensor, interval: interval)
+          save_series_data(series: series, sensor: sensor, interval: interval) if series
         end
       end
     end
@@ -83,10 +88,8 @@ module WolfWaagenApi
       series.points.each do |point|
         value = point.data
 
-        if interval
-          value = accumulated_value(sensor: sensor, interval: interval, point: point)
-        end
-          
+        value = accumulated_value(sensor: sensor, interval: interval, point: point) if interval
+
         Sensor::Reading.find_or_create_by(
           sensor: sensor,
           created_at: point.datetime,
@@ -99,7 +102,7 @@ module WolfWaagenApi
     def sensors_by_type(type:)
       @report.sensors.select do |sensor|
         sensor.sensor_type.property == type[:property] &&
-        sensor.sensor_type.unit == type[:unit]
+          sensor.sensor_type.unit == type[:unit]
       end
     end
 
@@ -135,9 +138,9 @@ module WolfWaagenApi
 
       range = intervals[interval]
       latest_record = sensor.sensor_readings.where(created_at: range).order('created_at').last
-      latest_value = latest_record&.calibrated_value || 0;
+      latest_value = latest_record&.calibrated_value || 0
 
-      return latest_value + value
+      latest_value + value
     end
   end
 end
