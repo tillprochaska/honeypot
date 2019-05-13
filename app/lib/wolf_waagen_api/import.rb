@@ -121,7 +121,13 @@ module WolfWaagenApi
 
         # If no readings have been imported yet, fetch readings
         # since the beginning of the report
-        latest_reading_date ||= @report.start_date
+        unless latest_reading_date
+          start_date = @report.start_date
+          # the start date's zimezone is UTC, local timezone
+          # (e. g. Europe/Berlin) is needed
+          start_date = Time.zone.local(start_date.year, start_date.month, start_date.day)
+          latest_reading_date = start_date
+        end
 
         date = latest_reading_date if date.nil? || latest_reading_date < date
       end

@@ -139,8 +139,9 @@ RSpec.describe WolfWaagenApi::Import do
         wolf_sensor_reading
       end
 
-      it 'returns the report start date' do
-        is_expected.to eq(DateTime.new(2019, 1, 1))
+      it 'returns the report start date with default time zone' do
+        # time zone is Europe/Berlin, which has a one hour offset during winter
+        is_expected.to eq(DateTime.new(2019, 1, 1, 0, 0, 0, '+0100'))
       end
     end
 
