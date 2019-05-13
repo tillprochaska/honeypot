@@ -48,6 +48,10 @@ RSpec.describe WolfWaagenApi::Import do
           # we have a daily accumulation interval and 12 hours frequency for new sensor readings
           # so below, two values go together
           values: [10, 20, 30, 40]
+        }, {
+          # yield
+          id: WolfWaagenApi::Import::SENSOR_TYPES.first[:series_id],
+          values: [10, nil, nil, 30]
         }]
       }
     )
@@ -228,10 +232,11 @@ RSpec.describe WolfWaagenApi::Import do
   end
 
   describe '#save_series_data' do
-    context 'given an accumulation interval' do
-      context 'accumulates values' do
-        subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
 
+    context 'given an accumulation interval' do
+      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+
+      context 'accumulates values' do
         before do
           import.save_series_data(
             series: result.series.second,
@@ -242,7 +247,20 @@ RSpec.describe WolfWaagenApi::Import do
 
         it { is_expected.to eq([10, 30, 30, 70]) }
       end
+
+      context 'ignores points without a value' do
+        before do
+          import.save_series_data(
+            series: result.series.third,
+            sensor: wolf_sensor,
+            interval: :daily
+          )
+        end
+
+        it { is_expected.to eq([10, 30]) }
+      end
     end
+
   end
 
   describe '#accumulated_value' do

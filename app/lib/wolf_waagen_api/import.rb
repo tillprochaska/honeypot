@@ -87,10 +87,13 @@ module WolfWaagenApi
     def save_series_data(series:, sensor:, interval: nil)
       series.points.each do |point|
         value = point.data
+        next unless value # some values might be `nil`
 
-        value = accumulated_value(sensor: sensor, interval: interval, point: point) if interval
+        if interval
+          value = accumulated_value(sensor: sensor, interval: interval, point: point)
+        end
 
-        Sensor::Reading.find_or_create_by(
+        reading = Sensor::Reading.find_or_create_by(
           sensor: sensor,
           created_at: point.datetime,
           calibrated_value: value,
@@ -139,7 +142,7 @@ module WolfWaagenApi
       range = intervals[interval]
       latest_record = sensor.sensor_readings.where(created_at: range).order('created_at').last
       latest_value = latest_record&.calibrated_value || 0
-
+      
       latest_value + value
     end
   end
