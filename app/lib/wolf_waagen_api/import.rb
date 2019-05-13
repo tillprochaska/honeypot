@@ -86,12 +86,16 @@ module WolfWaagenApi
 
     def save_series_data(series:, sensor:, interval: nil)
       series.points.each do |point|
+        # binding.pry if sensor.id == 38
+
         value = point.data
-        next unless value # some values might be `nil`
+        next if value.nil? # some values might be `nil`
 
         if interval
           value = accumulated_value(sensor: sensor, interval: interval, point: point)
         end
+        
+        # binding.pry if sensor.id == 38
 
         reading = Sensor::Reading.find_or_create_by(
           sensor: sensor,

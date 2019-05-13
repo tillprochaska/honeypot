@@ -51,7 +51,7 @@ RSpec.describe WolfWaagenApi::Import do
         }, {
           # yield
           id: WolfWaagenApi::Import::SENSOR_TYPES.first[:series_id],
-          values: [10, nil, nil, 30]
+          values: [10, 0, nil, 30]
         }]
       }
     )
@@ -257,7 +257,7 @@ RSpec.describe WolfWaagenApi::Import do
           )
         end
 
-        it { is_expected.to eq([10, 30]) }
+        it { is_expected.to eq([10, 10, 30]) }
       end
     end
 
