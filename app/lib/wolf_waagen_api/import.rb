@@ -55,9 +55,7 @@ module WolfWaagenApi
       )
 
       result = request.send
-      result.series.each do |series|
-        save_series_points(series: series)
-      end
+      save_data(result: result)
     end
 
     def api_sensors
@@ -69,15 +67,39 @@ module WolfWaagenApi
       end
     end
 
-    def api_sensors_by_series_id(series_id:)
-      type = SENSOR_TYPES.find { |t| t[:series_id] == series_id }
+    def save_data(result:)
+      SENSOR_TYPES.each do |type|
+        interval = type[:accumulate]
+        sensors = sensors_by_type(type: type)
+        series = result.series.find { |item| item.id == type[:series_id] }
 
-      api_sensors.select do |sensor|
-        # some of the data series the API returns might
-        # not have mappings to sensor types in the story board
-        type &&
-          sensor.sensor_type.property == type[:property] &&
-          sensor.sensor_type.unit == type[:unit]
+        sensors.each do |sensor|
+          save_series_data(series: series, sensor: sensor, interval: interval)
+        end
+      end
+    end
+
+    def save_series_data(series:, sensor:, interval: nil)
+      series.points.each do |point|
+        value = point.data
+
+        if interval
+          value = accumulated_value(sensor: sensor, interval: interval, point: point)
+        end
+          
+        Sensor::Reading.find_or_create_by(
+          sensor: sensor,
+          created_at: point.datetime,
+          calibrated_value: value,
+          uncalibrated_value: value
+        )
+      end
+    end
+
+    def sensors_by_type(type:)
+      @report.sensors.select do |sensor|
+        sensor.sensor_type.property == type[:property] &&
+        sensor.sensor_type.unit == type[:unit]
       end
     end
 
@@ -95,33 +117,6 @@ module WolfWaagenApi
       end
 
       date.to_datetime
-    end
-
-    def save_series_points(series:)
-      sensors = api_sensors_by_series_id(series_id: series.id)
-      interval = accumulation_interval_by_series_id(series_id: series.id)
-
-      sensors.each do |sensor|
-        series.points.each do |point|
-          if interval
-            value = accumulated_value(sensor: sensor, interval: interval, point: point)
-          else
-            value = point.data
-          end
-            
-          Sensor::Reading.find_or_create_by(
-            sensor: sensor,
-            created_at: point.datetime,
-            calibrated_value: value,
-            uncalibrated_value: value
-          )
-        end
-      end
-    end
-
-    def accumulation_interval_by_series_id(series_id:)
-      type = SENSOR_TYPES.find { |t| t[:series_id] == series_id }
-      type[:accumulate]
     end
 
     def accumulated_value(sensor:, interval:, point:)

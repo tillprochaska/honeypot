@@ -22,12 +22,21 @@ RSpec.describe WolfWaagenApi::Import do
     create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
   end
 
+  let(:wolf_sensor_type2) do
+    specified_type = WolfWaagenApi::Import::SENSOR_TYPES.second
+    create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
+  end
+
   let(:wolf_sensor) do
     create(:sensor, sensor_type: wolf_sensor_type, name: 'Wolf Sensor 1', report: report)
   end
 
   let(:wolf_sensor2) do
     create(:sensor, sensor_type: wolf_sensor_type, name: 'Wolf Sensor 2', report: report)
+  end
+
+  let(:wolf_sensor3) do
+    create(:sensor, sensor_type: wolf_sensor_type2, name: 'Wolf Sensor 3', report: report)
   end
 
   let(:wolf_sensor_reading) do
@@ -135,25 +144,6 @@ RSpec.describe WolfWaagenApi::Import do
     end
   end
 
-  describe '#api_sensors_by_series_id' do
-    subject do
-      specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first
-      import.api_sensors_by_series_id(series_id: specified_type[:series_id])
-    end
-
-    context 'if no sensor type matches' do
-      before { other_type_sensor }
-
-      it { is_expected.to eq([]) }
-    end
-
-    context 'if no sensor matches' do
-      before { wolf_sensor_type }
-
-      it { is_expected.to eq([]) }
-    end
-  end
-
   describe '#start_date' do
     subject { import.start_date }
 
@@ -183,56 +173,36 @@ RSpec.describe WolfWaagenApi::Import do
     end
   end
 
-  describe '#save_series_points' do
-    context 'given a Wolf Waagen sensor' do
-      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+  describe '#save_data' do
 
+    context 'given a single matching sensor' do
+      subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
       before { wolf_sensor }
 
-      context 'creates sensor readings for that sensor' do
-        before { import.save_series_points(series: result.series.first) }
-
+      context 'creates sensor readings' do
+        before { import.save_data(result: result) }
         it { is_expected.to eq([10, 20, 30]) }
       end
 
-      context 'does not create duplicate sensor readings' do
+      context 'does not create duplicate readings' do
         before do
-          import.save_series_points(series: result.series.first)
-          import.save_series_points(series: result.series.first)
+          import.save_data(result: result)
+          import.save_data(result: result)
         end
 
-        it { is_expected.to eq([10, 20, 30]) }
+        it { is_expected.to eq([10, 20, 30] )}
       end
+
     end
 
-    context 'given an sensor with accumulation of readings' do
-      let(:accumulated_wolf_sensor_type) do
-        specified_type = WolfWaagenApi::Import::SENSOR_TYPES.first # Ertrag
-        create(:sensor_type, property: specified_type[:property], unit: specified_type[:unit])
-      end
-
-      let(:accumulated_wolf_sensor) do
-        create(:sensor, sensor_type: accumulated_wolf_sensor_type, name: 'Wolf Sensor (accumulated)', report: report)
-      end
-
-      before { accumulated_wolf_sensor }
-
-      it 'accumulates values' do
-        import.save_series_points(series: result.series.second)
-        values = accumulated_wolf_sensor.sensor_readings.pluck(:calibrated_value)
-
-        expect(values).to eq([10, 30, 30, 70])
-      end
-    end
-
-    context 'given two Wolf Waagen sensors' do
+    context 'given two sensors of the same sensor type' do
       before do
         wolf_sensor
         wolf_sensor2
       end
 
       it 'creates sensor readings for both sensors' do
-        import.save_series_points(series: result.series.first)
+        import.save_data(result: result)
         saved_values1 = wolf_sensor.sensor_readings.pluck(:calibrated_value)
         saved_values2 = wolf_sensor2.sensor_readings.pluck(:calibrated_value)
 
@@ -240,6 +210,43 @@ RSpec.describe WolfWaagenApi::Import do
         expect(saved_values2).to eq([10, 20, 30])
       end
     end
+
+    context 'given two sensor types for the same series' do
+      before do
+        wolf_sensor
+        wolf_sensor3
+      end
+
+      it 'creates readings for sensors of both types' do
+        import.save_data(result: result)
+        saved_values1 = wolf_sensor.sensor_readings.pluck(:calibrated_value)
+        saved_values3 = wolf_sensor3.sensor_readings.pluck(:calibrated_value)
+
+        expect(saved_values1).to eq([10, 20, 30])
+        expect(saved_values2).to eq([10, 20, 30])
+      end
+    end
+
+  end
+
+  describe '#save_series_data' do
+
+    context 'given an accumulation interval' do
+      context 'accumulates values' do
+        subject { wolf_sensor.sensor_readings.pluck(:calibrated_value) }
+
+        before do
+          import.save_series_data(
+            series: result.series.second,
+            sensor: wolf_sensor,
+            interval: :daily
+          )
+        end
+
+        it { is_expected.to eq([10, 30, 30, 70]) }
+      end
+    end
+
   end
 
   describe '#accumulated_value' do
