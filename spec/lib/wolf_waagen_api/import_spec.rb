@@ -221,8 +221,8 @@ RSpec.describe WolfWaagenApi::Import do
         saved_values1 = sensor1.sensor_readings.pluck(:calibrated_value)
         saved_values2 = sensor2.sensor_readings.pluck(:calibrated_value)
 
-        expect(saved_values1).to eq([10, 30, 30, 70])
-        expect(saved_values2).to eq([10, 20, 30, 40])
+        expect(saved_values1).to eq([10, 30, 30, 70]) # type for accumulated yield
+        expect(saved_values2).to eq([10, 20, 30, 40]) # type for yield data only
       end
     end
   end
