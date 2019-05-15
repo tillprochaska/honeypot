@@ -150,7 +150,7 @@ module WolfWaagenApi
       range = intervals[interval]
       latest_record = sensor.sensor_readings.where(created_at: range).order('created_at').last
       latest_value = latest_record&.calibrated_value || 0
-      
+
       latest_value + value
     end
   end
