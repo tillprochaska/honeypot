@@ -137,12 +137,14 @@ module WolfWaagenApi
       date = point.datetime
       value = point.data
 
+      # uses exclusive ranges to prevent wrong calculation
+      # if a record for the point already exists
       intervals = {
-        daily: date.beginning_of_day..date,
-        weekly: date.beginning_of_week..date,
-        monthly: date.beginning_of_month..date,
-        quarterly: date.beginning_of_quarter..date,
-        yearly: date.beginning_of_year..date
+        daily: date.beginning_of_day...date,
+        weekly: date.beginning_of_week...date,
+        monthly: date.beginning_of_month...date,
+        quarterly: date.beginning_of_quarter...date,
+        yearly: date.beginning_of_year...date
       }
 
       raise ArgumentError "Not a valid interval: #{interval}" unless intervals.key? interval
