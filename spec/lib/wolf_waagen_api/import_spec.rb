@@ -261,7 +261,7 @@ RSpec.describe WolfWaagenApi::Import do
         end
 
         it { is_expected.to eq([10, 30, 30, 70]) }
-      end 
+      end
 
       context 'ignores points without a value' do
         before do
