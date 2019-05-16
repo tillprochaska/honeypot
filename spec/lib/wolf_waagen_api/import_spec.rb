@@ -248,6 +248,21 @@ RSpec.describe WolfWaagenApi::Import do
         it { is_expected.to eq([10, 30, 30, 70]) }
       end
 
+      context 'after importing multiple times' do
+        before do
+          options = {
+            series: result.series.second,
+            sensor: wolf_sensor,
+            interval: :daily
+          }
+
+          import.save_series_data(options)
+          import.save_series_data(options)
+        end
+
+        it { is_expected.to eq([10, 30, 30, 70]) }
+      end 
+
       context 'ignores points without a value' do
         before do
           import.save_series_data(
@@ -291,6 +306,24 @@ RSpec.describe WolfWaagenApi::Import do
       end
 
       before { existing_reading }
+
+      it 'ignores existing readings with the exact same date' do
+        create(
+          :sensor_reading,
+          sensor: wolf_sensor,
+          created_at: DateTime.new(2019, 1, 1),
+          calibrated_value: 10,
+          uncalibrated_value: 10
+        )
+
+        value = import.accumulated_value(
+          sensor: wolf_sensor,
+          interval: :daily,
+          point: series.points.first
+        )
+
+        expect(value).to eq(10)
+      end
 
       it 'returns sum of given point and latest value in given interval' do
         value = import.accumulated_value(
