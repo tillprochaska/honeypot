@@ -19,7 +19,7 @@ RSpec.describe 'DiaryEntries', type: :request do
       it 'sends only 3 text components' do
         create_list(:text_component, 4, report: report)
         action
-        expect(js['text_components'].count).to eq 3
+        expect(js['main_part'].scan('MyText').count).to eq 3
       end
 
       describe 'priorities' do
@@ -32,9 +32,8 @@ RSpec.describe 'DiaryEntries', type: :request do
           create(:text_component, report: report, heading: 'High priority component',   triggers: create_list(:trigger, 1, priority: :high))
           create(:text_component, report: report, heading: 'Always on top priority component', triggers: create_list(:trigger, 1, priority: :always_on_top))
           action
-          expect(js['text_components'][0]['heading']).to eq 'Always on top priority component'
-          expect(js['text_components'][1]['heading']).to eq 'High priority component'
-          expect(js['text_components'].count).to eq 3
+          expect(js['heading']). to eq 'Always on top priority component'
+          expect(js['main_part'].scan('MyText').count).to eq 3
         end
       end
     end

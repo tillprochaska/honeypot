@@ -26,37 +26,10 @@ Feature: Render markup for frontend
       "id": 1,
       "moment": "2017-06-21T14:00:00.000+02:00",
       "release": "final",
-      "text_components": [
-
-        {
-          "id": 1,
-          "heading": "MyString",
-          "introduction": "MyText",
-          "main_part": "The humidity today is 50.0 %!",
-          "closing": "MyText",
-          "from_day": null,
-          "to_day": null,
-          "question_answers": [ ],
-          "image_url": "/images/original/missing.png",
-          "image_url_big": "/images/big/missing.png",
-          "image_url_small": "/images/small/missing.png",
-          "image_alt": null,
-          "question_answers": [
-            {
-              "id": 1,
-              "text_component_id": 1,
-              "question": "Could you say that once more?",
-              "answer": "50.0 %"
-            }, {
-              "id": 2,
-              "text_component_id": 1,
-              "question": "Really?!",
-              "answer": "Yep."
-            }
-          ],
-          "url": "http://example.org/reports/1/text_components/1.json"
-        }
-      ],
+      "heading": "MyString",
+      "introduction": "<ul>\n<li>MyText</li>\n</ul>\n",
+      "main_part": "<p>The humidity today is 50.0 %!<span class='resi-thread'>\n<button name=\"button\" type=\"submit\" class=\"resi-question btn btn-link\">(* Could you say that once more?)</button>\n<span class='resi-answer'>50.0 %</span>\n<button name=\"button\" type=\"submit\" class=\"resi-question btn btn-link\">(* Really?!)</button>\n<span class='resi-answer'>Yep.</span>\n</span>\n</p>\n",
+      "closing": "MyText",
       "url": "http://example.org/reports/1/diary_entries/1.json"
     }
     """
