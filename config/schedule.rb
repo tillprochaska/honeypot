@@ -13,6 +13,12 @@ every 1.minutes do
   rake 'cache:delete'
 end
 
+%w[00:10am 6:10am 9:10am 1:10pm 6:10pm].each do |time|
+  every :day, at: time do
+    rake 'archive'
+  end
+end
+
 every :hour, at: 5 do
   rake 'wolf_waagen_api:fetch'
 end
