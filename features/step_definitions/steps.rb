@@ -1499,7 +1499,7 @@ end
 
 Then(/^the JSON response should include the active text component$/) do
   json_response = JSON.parse(last_response.body)
-  expect(json_response['text_components'][0]['main_part']).to eq('I am in!')
+  expect(json_response['main_part']).to include('I am in!')
 end
 
 When(/^I edit an existing text component with an image$/) do

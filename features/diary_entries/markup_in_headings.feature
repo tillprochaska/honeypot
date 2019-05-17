@@ -35,53 +35,10 @@ Feature: Render markup in headings
       "id": 1,
       "moment": "2017-06-21T14:00:00.000+02:00",
       "release": "final",
-      "text_components": [
-        {
-          "closing": "MyText",
-          "from_day": null,
-          "heading": "50.0 %: That’s today’s humidity",
-          "id": 1,
-          "image_alt": null,
-          "image_url": "/images/original/missing.png",
-          "image_url_big": "/images/big/missing.png",
-          "image_url_small": "/images/small/missing.png",
-          "introduction": "MyText",
-          "main_part": "MyText",
-          "question_answers": [],
-          "to_day": null,
-          "url": "http://example.org/reports/1/text_components/1.json"
-        },
-        {
-          "closing": "MyText",
-          "from_day": null,
-          "heading": "MyString",
-          "id": 3,
-          "image_alt": null,
-          "image_url": "/images/original/missing.png",
-          "image_url_big": "/images/big/missing.png",
-          "image_url_small": "/images/small/missing.png",
-          "introduction": "MyText",
-          "main_part": "Blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhh!",
-          "question_answers": [],
-          "to_day": null,
-          "url": "http://example.org/reports/1/text_components/3.json"
-        },
-        {
-          "closing": "MyText",
-          "from_day": null,
-          "heading": "Let’s repeat it one more time: 50.0 %",
-          "id": 2,
-          "image_alt": null,
-          "image_url": "/images/original/missing.png",
-          "image_url_big": "/images/big/missing.png",
-          "image_url_small": "/images/small/missing.png",
-          "introduction": "MyText",
-          "main_part": "MyText",
-          "question_answers": [],
-          "to_day": null,
-          "url": "http://example.org/reports/1/text_components/2.json"
-        }
-      ],
+      "heading": "50.0 %: That’s today’s humidity",
+      "introduction": "<ul>\n<li>MyText</li>\n<li>MyText</li>\n<li>MyText</li>\n</ul>\n",
+      "main_part": "<p>MyText<span class='resi-thread'>\n</span>\n Blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhh!<span class='resi-thread'>\n</span>\n</p>\n<h4 class='sub-heading'>Let’s repeat it one more time: 50.0 %</h4>\n<p>MyText<span class='resi-thread'>\n</span>\n</p>\n",
+      "closing": "MyText MyText MyText",
       "url": "http://example.org/reports/1/diary_entries/1.json"
     }
     """
