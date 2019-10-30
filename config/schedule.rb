@@ -25,25 +25,25 @@ end
 
 # %w[09:10 14:10 19:10].each do |time|
 #   every :day, at: time do
-    # ["Königreich Köln (Gimnich)", 4]
+#     ["Königreich Köln (Gimnich)", 4]
 #     rake 'twitter:tweet[4]'
 #   end
 # end
 
 # %w[09:40 14:40 19:40].each do |time|
 #   every :day, at: time do
-    # ["Königreich Lage (Strulik)", 2]
+#     ["Königreich Lage (Strulik)", 2]
 #     rake 'twitter:tweet[2]'
 #  end
 # end
 
 # %w[10:10 15:10 20:10].each do |time|
 #   every :day, at: time do
-    # ["Königreich Witten (Marcel)", 3]
+#     ["Königreich Witten (Marcel)", 3]
 #     rake 'twitter:tweet[3]'
 #   end
 # end
-#
+
 # every 4.days do
 #   runner "AnotherModel.prune_old_records"
 # end
