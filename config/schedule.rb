@@ -28,7 +28,7 @@ end
     # ["Königreich Köln (Gimnich)", 4]
 #     rake 'twitter:tweet[4]'
 #   end
-end
+# end
 
 # %w[09:40 14:40 19:40].each do |time|
 #   every :day, at: time do
